@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>物語は、素晴らしい。</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#11131b}
+body{font-family:"Yu Gothic","Hiragino Kaku Gothic ProN",system-ui,sans-serif;color:#fff}
+#app{position:relative;width:100vw;height:100dvh;min-height:100vh;overflow:hidden;background:#11131b}
+.scene{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .5s ease}
+.scene.active{opacity:1;pointer-events:auto}
+.stage{position:absolute;inset:0;overflow:hidden}
+
+/* ---------- START ---------- */
+.start{
+ background:
+ radial-gradient(circle at 74% 24%,rgba(255,209,105,.32),transparent 17%),
+ linear-gradient(180deg,#49306f 0%,#a85279 43%,#db8467 73%,#efc27c 100%);
+}
+.start:after{
+ content:"";position:absolute;left:0;right:0;bottom:0;height:36%;
+ background:
+ linear-gradient(#566f3e 0 18%,#3f5a31 18% 36%,#786347 36% 46%,#5a4634 46% 100%);
+ image-rendering:pixelated
+}
+.pixel-cloud{position:absolute;width:92px;height:28px;background:#f3cfb1;opacity:.6;box-shadow:28px -12px 0 #f3cfb1,56px 0 0 #f3cfb1}
+.pc1{left:7%;top:21%}.pc2{right:10%;top:33%;transform:scale(.7);opacity:.4}
+.start h1{position:absolute;z-index:5;top:12%;left:8%;right:8%;margin:0;text-align:center;font:800 clamp(30px,8vw,52px)/1.35 "Yu Mincho","Hiragino Mincho ProN",serif;letter-spacing:.08em;text-shadow:3px 4px 0 rgba(68,35,66,.26)}
+.start p{position:absolute;z-index:5;top:31%;left:12%;right:12%;margin:0;text-align:center;font-weight:700;font-size:clamp(14px,3.7vw,19px);line-height:1.8}
+#startBtn{position:absolute;z-index:7;left:50%;bottom:10%;transform:translateX(-50%);border:3px solid #f6e8ba;background:#2d2341;color:#f6e8ba;padding:13px 28px;font-weight:900;letter-spacing:.18em;box-shadow:5px 5px 0 #17131f}
+
+/* ---------- JRPG CHARACTER ---------- */
+.hero{
+ --s:1;
+ position:absolute;width:48px;height:64px;transform:scale(var(--s));transform-origin:50% 100%;
+ image-rendering:pixelated;z-index:20;
+}
+.hero .shadow{position:absolute;left:8px;bottom:0;width:32px;height:8px;background:rgba(0,0,0,.26);border-radius:50%}
+.hero .hair{position:absolute;left:12px;top:2px;width:24px;height:12px;background:#171923;box-shadow:-4px 4px 0 #171923,4px 4px 0 #171923}
+.hero .face{position:absolute;left:14px;top:10px;width:20px;height:14px;background:#efc49c}
+.hero .body{position:absolute;left:10px;top:24px;width:28px;height:22px;background:#355f9d;box-shadow:0 5px 0 #244674}
+.hero .belt{position:absolute;left:10px;top:41px;width:28px;height:4px;background:#9a6a37}
+.hero .legL,.hero .legR{position:absolute;top:46px;width:8px;height:14px;background:#29324a}
+.hero .legL{left:13px}.hero .legR{right:13px}
+.hero .shoeL,.hero .shoeR{position:absolute;top:58px;width:11px;height:5px;background:#171923}
+.hero .shoeL{left:10px}.hero .shoeR{right:10px}
+
+/* no limb rotation; actual 2-frame JRPG stepping */
+.hero.walk .legL,.hero.walk .shoeL{animation:stepL .34s steps(1,end) infinite}
+.hero.walk .legR,.hero.walk .shoeR{animation:stepR .34s steps(1,end) infinite}
+.hero.walk{animation:bob .34s steps(1,end) infinite}
+@keyframes stepL{0%,49%{transform:translateY(0)}50%,100%{transform:translateY(-4px)}}
+@keyframes stepR{0%,49%{transform:translateY(-4px)}50%,100%{transform:translateY(0)}}
+@keyframes bob{0%,49%{margin-top:0}50%,100%{margin-top:-2px}}
+
+.hero.run .legL,.hero.run .shoeL{animation:stepL .18s steps(1,end) infinite}
+.hero.run .legR,.hero.run .shoeR{animation:stepR .18s steps(1,end) infinite}
+.hero.run{animation:bob .18s steps(1,end) infinite}
+
+/* ---------- MESSAGE WINDOW ---------- */
+.msgbox{
+ position:absolute;z-index:80;left:50%;transform:translateX(-50%);
+ width:min(84vw,620px);padding:10px 14px 11px;
+ background:#15182a;border:3px solid #f0ead5;
+ box-shadow:0 0 0 3px #343858,5px 6px 0 rgba(0,0,0,.25);
+ font-weight:700;font-size:clamp(13px,3.2vw,18px);line-height:1.55;letter-spacing:.025em;text-align:left;
+}
+.msgbox.top{top:calc(env(safe-area-inset-top,0px) + 14px)}
+.msgbox.bottom{bottom:calc(env(safe-area-inset-bottom,0px) + 16px)}
+.msgbox span{display:block}
+.name{color:#ffd873;margin-bottom:3px;font-size:.82em}
+
+/* ---------- SCENE 1: CITY ---------- */
+.s1{background:linear-gradient(#35217a 0 45%,#ce5e8f 45% 70%,#eeb169 70% 100%)}
+.s1 .ground{position:absolute;left:0;right:0;bottom:0;height:37%;background:
+repeating-linear-gradient(0deg,#5c5639 0 16px,#686144 16px 32px),
+repeating-linear-gradient(90deg,transparent 0 31px,rgba(255,255,255,.04) 31px 32px)}
+.building{position:absolute;bottom:37%;background:#38295b;border-top:5px solid #75528f;box-shadow:inset 0 -15px 0 rgba(0,0,0,.12)}
+.b1{left:2%;width:18%;height:28%}.b2{left:24%;width:22%;height:36%}.b3{right:28%;width:18%;height:25%}.b4{right:3%;width:21%;height:39%}
+.win{position:absolute;width:8px;height:9px;background:#ffd76b;box-shadow:18px 0 0 #ffd76b,36px 0 0 #ffd76b,0 18px 0 #ffd76b,18px 18px 0 #ffd76b,36px 18px 0 #ffd76b;opacity:.78}
+.b1 .win,.b2 .win,.b3 .win,.b4 .win{left:10px;top:12px}
+.command{position:absolute;padding:6px 9px;background:#f4ead1;color:#362949;border:2px solid #2a2340;font-weight:900;font-size:12px;box-shadow:3px 3px 0 rgba(0,0,0,.18);animation:floatStep 1.6s steps(2,end) infinite}
+.cm1{left:9%;top:26%}.cm2{left:42%;top:19%}.cm3{right:8%;top:31%}.cm4{right:32%;top:52%}
+@keyframes floatStep{50%{transform:translateY(-8px)}}
+.s1 .hero{left:7%;bottom:9%;animation:move1 8s steps(18,end) forwards,bob .34s steps(1,end) infinite}
+@keyframes move1{to{left:76%}}
+
+/* ---------- SCENE 2: STORM ---------- */
+.s2{background:linear-gradient(#10182e 0 44%,#27304c 44% 70%,#5a2d42 70% 100%)}
+.s2 .ground{position:absolute;left:0;right:0;bottom:0;height:28%;background:#39384a}
+.rain{position:absolute;inset:-10%;background:repeating-linear-gradient(110deg,transparent 0 16px,#8fb9dc 17px 19px,transparent 20px 32px);opacity:.5;animation:rain .32s linear infinite}
+@keyframes rain{to{transform:translate(-28px,74px)}}
+.lightning{position:absolute;left:58%;top:1%;width:26px;height:52%;background:#fff36e;clip-path:polygon(40% 0,100% 0,63% 38%,100% 38%,8% 100%,37% 55%,0 55%);filter:drop-shadow(0 0 12px #ffef63);animation:flash 1.9s steps(1,end) infinite}
+@keyframes flash{0%,78%,100%{opacity:0}80%,86%{opacity:1}}
+.s2 .hero{left:10%;bottom:12%;animation:move2 7.6s steps(17,end) forwards,bob .18s steps(1,end) infinite}
+@keyframes move2{to{left:47%}}
+.rival{position:absolute;right:12%;bottom:12%;width:56px;height:78px;filter:drop-shadow(0 0 12px rgba(255,255,255,.8))}
+.rival .head{position:absolute;left:16px;top:0;width:24px;height:18px;background:#fff}
+.rival .body{position:absolute;left:10px;top:18px;width:36px;height:42px;background:#fff}
+.rival .legs{position:absolute;left:13px;top:59px;width:10px;height:19px;background:#fff;box-shadow:20px 0 0 #fff}
+.wave{position:absolute;left:0;right:0;bottom:0;height:20%;background:#0f4972;clip-path:polygon(0 48%,8% 28%,17% 50%,28% 22%,38% 53%,49% 20%,61% 54%,73% 27%,84% 55%,93% 31%,100% 50%,100% 100%,0 100%);animation:wave 1s steps(3,end) infinite}
+@keyframes wave{50%{transform:translateY(-12px)}}
+
+/* ---------- SCENE 3: UNDERSEA ---------- */
+.s3{background:linear-gradient(#1ca9d1 0 12%,#0b5b87 28%,#073354 55%,#061320 100%)}
+.s3 .surface{position:absolute;left:0;right:0;top:0;height:13%;background:repeating-linear-gradient(90deg,#75dded 0 26px,#a1ecf5 26px 52px)}
+.s3 .hero{left:47%;top:64%;transform:rotate(-90deg) scale(1.05);animation:swimMove 10.5s steps(16,end) forwards}
+.s3 .hero .legL,.s3 .hero .shoeL{animation:stepL .42s steps(1,end) infinite}
+.s3 .hero .legR,.s3 .hero .shoeR{animation:stepR .42s steps(1,end) infinite}
+@keyframes swimMove{to{top:22%;left:52%}}
+.bubble{position:absolute;border:3px solid rgba(170,240,255,.5);width:10px;height:10px;animation:bubble 5s linear infinite}
+.bb1{left:17%;bottom:-5%}.bb2{left:68%;bottom:-8%;animation-delay:1.3s}.bb3{left:81%;bottom:-3%;animation-delay:2.2s}
+@keyframes bubble{to{transform:translateY(-100vh);opacity:0}}
+
+.pixelClock{
+ position:absolute;width:58px;height:58px;border:4px solid rgba(164,240,255,.82);
+ background:rgba(4,35,57,.58);border-radius:50%;
+ box-shadow:0 0 0 3px rgba(29,120,151,.45),0 0 18px rgba(85,225,255,.35);
+ animation:clockFloat 5.8s steps(12,end) infinite;
+}
+.pixelClock:before{
+ content:"";position:absolute;left:50%;top:8px;width:4px;height:22px;
+ margin-left:-2px;background:#d8fbff;transform-origin:50% 20px;
+ animation:handSpin 1.15s steps(12,end) infinite;
+}
+.pixelClock:after{
+ content:"";position:absolute;left:50%;top:16px;width:4px;height:15px;
+ margin-left:-2px;background:#77dff1;transform-origin:50% 12px;
+ animation:handSpin 5.2s steps(12,end) infinite reverse;
+}
+.pcA{left:10%;top:34%}
+.pcB{right:11%;top:53%;transform:scale(.72);animation-delay:.7s}
+.pcC{left:28%;top:67%;transform:scale(.52);animation-delay:1.5s}
+.pcD{right:27%;top:21%;transform:scale(.42);animation-delay:2.2s}
+.pixelClock i{
+ position:absolute;left:25px;top:25px;width:8px;height:8px;background:#e5fbff;border-radius:50%;
+ box-shadow:0 -21px 0 -2px #9eeeff,0 21px 0 -2px #9eeeff,21px 0 0 -2px #9eeeff,-21px 0 0 -2px #9eeeff;
+}
+@keyframes handSpin{to{transform:rotate(360deg)}}
+@keyframes clockFloat{
+ 0%{margin-top:0;opacity:.25}
+ 20%{opacity:.95}
+ 60%{margin-top:-18px}
+ 100%{margin-top:-36px;opacity:.2}
+}
+
+/* ---------- SCENE 4: SEA PARTING ---------- */
+.s4{background:#07141d}
+.sea{position:absolute;top:0;bottom:0;width:51%;background:repeating-linear-gradient(0deg,#0e7fac 0 16px,#11688f 16px 32px);z-index:8;transition:transform 1.7s steps(8,end)}
+.leftsea{left:0}.rightsea{right:0}
+.foam{position:absolute;top:0;bottom:0;width:9px;background:#dffbff;box-shadow:0 0 16px #dffbff}
+.leftsea .foam{right:0}.rightsea .foam{left:0}
+.s4.open .leftsea{transform:translateX(-88%)}.s4.open .rightsea{transform:translateX(88%)}
+.path{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:44%;height:86%;background:
+repeating-linear-gradient(0deg,#8a704c 0 18px,#755c3f 18px 36px);clip-path:polygon(44% 0,56% 0,100% 100%,0 100%)}
+.s4 .hero{left:50%;bottom:8%;margin-left:-24px}
+.s4.open .hero{animation:forwardWalk 6.2s steps(14,end) forwards,bob .34s steps(1,end) infinite}
+@keyframes forwardWalk{
+  0%{bottom:8%;--s:1}
+  100%{bottom:52%;--s:.58}
+}
+.empty-party{position:absolute;left:8%;right:8%;bottom:7%;height:54px;border:3px solid rgba(255,255,255,.18);opacity:0;transition:opacity 1s ease}
+.empty-party:before{content:"PARTY";position:absolute;left:8px;top:-22px;color:rgba(255,255,255,.28);font:900 12px ui-monospace}
+.s4.open .empty-party{opacity:1}
+
+/* ---------- SCENE 5: LETTERS ---------- */
+.s5{background:linear-gradient(#37314a 0 50%,#62526a 50% 72%,#8e6267 72% 100%);transition:background 2.5s ease}
+.s5.light{background:linear-gradient(#7c55a5 0 27%,#e96f8b 27% 55%,#f4b661 55% 78%,#f9db8f 78% 100%)}
+.s5 .ground{position:absolute;left:0;right:0;bottom:0;height:28%;background:#443b48}
+.s5.light .ground{background:#806b45}
+.s5 .hero{left:50%;bottom:10%;margin-left:-24px}
+.letter{position:absolute;width:46px;height:32px;background:#fff3d5;border:2px solid #795b43;box-shadow:3px 3px 0 rgba(0,0,0,.16);animation:letter 4.7s steps(10,end) infinite}
+.l1{left:17%;top:-8%}.l2{left:47%;top:-12%;animation-delay:1s}.l3{left:73%;top:-10%;animation-delay:2s}
+@keyframes letter{to{transform:translateY(115vh) rotate(180deg)}}
+.support{position:absolute;z-index:10;left:50%;transform:translateX(-50%);padding:7px 10px;background:#fff3d6;color:#463148;border:2px solid #4a3853;font-size:clamp(12px,3vw,16px);font-weight:900;opacity:0;transition:opacity .4s}
+.sp1{top:20%}.sp2{top:34%}.sp3{top:48%}
+.s5.p1 .sp1,.s5.p2 .sp1,.s5.p2 .sp2,.s5.p3 .sp1,.s5.p3 .sp2,.s5.p3 .sp3{opacity:1}
+
+/* ---------- SCENE 6: THREADS ---------- */
+.s6{background:linear-gradient(#33204f 0 55%,#191624 55% 100%)}
+.s6 .ground{position:absolute;left:0;right:0;bottom:0;height:30%;background:#2e2833}
+#threadCanvas{position:absolute;inset:0;width:100%;height:100%}
+.s6 .hero{left:50%;bottom:10%;margin-left:-24px}
+
+.emotion{
+ position:absolute;width:38px;height:38px;border:3px solid currentColor;background:#f6df83;
+ border-radius:50%;box-shadow:0 0 18px currentColor,4px 4px 0 rgba(0,0,0,.15);
+ image-rendering:pixelated;opacity:.2;transform:scale(.7);
+ transition:opacity .5s ease,transform .5s steps(3,end);
+}
+.s6.lit .emotion{opacity:1;transform:scale(1)}
+.emotion:before,.emotion:after{content:"";position:absolute;background:#392a3b}
+.emotion .mouth{position:absolute;left:9px;right:9px;top:23px;height:6px;border-bottom:4px solid #392a3b;border-radius:0 0 18px 18px}
+.happy{left:24%;top:31%;color:#ff758f;background:#ffd86e}
+.happy:before{left:8px;top:10px;width:5px;height:5px}.happy:after{right:8px;top:10px;width:5px;height:5px}
+.sad{left:34%;top:46%;color:#65d9ff;background:#9adff0}
+.sad:before{left:8px;top:11px;width:5px;height:5px}.sad:after{right:8px;top:11px;width:5px;height:5px}
+.sad .mouth{top:26px;border-bottom:0;border-top:4px solid #392a3b;border-radius:18px 18px 0 0}
+.sad .tear{position:absolute;right:5px;top:17px;width:4px;height:8px;background:#2e8acb}
+.angry{right:24%;top:31%;color:#ff7868;background:#f29a78}
+.angry:before{left:7px;top:11px;width:8px;height:3px;transform:rotate(20deg)}.angry:after{right:7px;top:11px;width:8px;height:3px;transform:rotate(-20deg)}
+.angry .mouth{top:26px;border-bottom:0;border-top:4px solid #392a3b;border-radius:18px 18px 0 0}
+.love{right:34%;top:46%;color:#ff70bb;background:#f4b0c8}
+.love:before{content:"♥";left:5px;top:3px;background:none;color:#b93271;font-size:13px;line-height:1}
+.love:after{content:"♥";right:5px;top:3px;background:none;color:#b93271;font-size:13px;line-height:1}
+.love .mouth{top:23px}
+.calm{left:50%;top:23%;margin-left:-19px;color:#a9ff9b;background:#d7eaa1}
+.calm:before{left:7px;top:13px;width:8px;height:3px}.calm:after{right:7px;top:13px;width:8px;height:3px}
+.calm .mouth{top:23px}
+
+.endline{
+ position:absolute;z-index:90;left:50%;bottom:8%;transform:translateX(-50%);
+ width:min(74vw,500px);text-align:center;font:600 clamp(12px,3vw,16px)/1.7 "Yu Mincho","Hiragino Mincho ProN",serif;
+ letter-spacing:.05em;opacity:0;transition:opacity .65s ease;color:#f3eadc;text-shadow:0 2px 10px rgba(0,0,0,.55)
+}
+.endline.show{opacity:1}
+.fadeout{position:absolute;inset:0;z-index:100;background:#11131b;opacity:0;pointer-events:none;transition:opacity 1.4s ease}
+.fadeout.show{opacity:1}
+
+/* progress */
+.progress{position:absolute;z-index:200;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.12)}
+.progress i{display:block;width:0;height:100%;background:#f1d26e}
+
+/* V9 TikTok vertical-video safe composition */
+:root{
+  --tt-safe-bottom:max(18vh,150px);
+  --tt-safe-top:max(7vh,54px);
+}
+.msgbox.bottom{
+  bottom:calc(var(--tt-safe-bottom) + env(safe-area-inset-bottom,0px));
+}
+.s5 .msgbox.bottom{
+  bottom:calc(var(--tt-safe-bottom) + env(safe-area-inset-bottom,0px));
+}
+.endline{
+  bottom:calc(var(--tt-safe-bottom) + 8px) !important;
+}
+.s1 .hero,.s2 .hero,.s5 .hero,.s6 .hero{
+  margin-bottom:var(--tt-safe-bottom);
+}
+.s1 .ground,.s2 .ground,.s5 .ground,.s6 .ground{
+  padding-bottom:var(--tt-safe-bottom);
+}
+.s4 .hero{bottom:calc(8% + var(--tt-safe-bottom)) !important}
+.s4.open .hero{animation:forwardWalkSafe 6.2s steps(14,end) forwards,bob .34s steps(1,end) infinite}
+@keyframes forwardWalkSafe{
+  0%{bottom:calc(8% + var(--tt-safe-bottom));--s:1}
+  100%{bottom:58%;--s:.58}
+}
+.s4 .empty-party{bottom:calc(var(--tt-safe-bottom) + 4px)}
+/* Keep final emotion cluster in the middle third, never near TikTok chrome */
+.s6 .happy{left:26%;top:30%}
+.s6 .sad{left:35%;top:43%}
+.s6 .angry{right:26%;top:30%}
+.s6 .love{right:35%;top:43%}
+.s6 .calm{left:50%;top:21%;margin-left:-19px}
+
+/* opening card is intentionally brief */
+.start h1{top:18%;font-size:clamp(25px,7vw,44px)}
+.start p{top:34%;font-size:clamp(12px,3.2vw,16px)}
+#startBtn{bottom:calc(var(--tt-safe-bottom) + 10px)}
+.start.go h1,.start.go p{animation:introVanish .42s ease forwards}
+@keyframes introVanish{to{opacity:0;transform:translateX(-50%) translateY(-8px)}}
+
+
+/* V10 opening typography: explicit Japanese phrase breaks */
+.start h1{
+  left:50%;right:auto;width:min(78vw,520px);
+  transform:translateX(-50%);
+  white-space:normal;
+  word-break:keep-all;
+  overflow-wrap:normal;
+  line-break:strict;
+}
+.start h1 span{display:block;white-space:nowrap}
+.start p{
+  left:50%;right:auto;width:min(82vw,560px);
+  transform:translateX(-50%);
+  white-space:normal;
+  word-break:keep-all;
+  overflow-wrap:normal;
+  line-break:strict;
+}
+.start p span{display:block;white-space:nowrap}
+@media (max-width:390px){
+  .start h1{width:88vw;font-size:clamp(23px,6.7vw,34px)}
+  .start p{width:90vw;font-size:clamp(11px,3vw,14px)}
+}
+
+</style>
+</head>
+<body>
+<div id="app">
+<section id="start" class="scene start active">
+  <div class="pixel-cloud pc1"></div><div class="pixel-cloud pc2"></div>
+  <h1><span>物語は、</span><span>素晴らしい。</span></h1>
+  <p><span>シナリオライターだった頃の話。</span></p>
+  <button id="startBtn">START</button>
+</section>
+
+<section id="s1" class="scene s1">
+  <div class="stage">
+    <div class="building b1"><i class="win"></i></div><div class="building b2"><i class="win"></i></div><div class="building b3"><i class="win"></i></div><div class="building b4"><i class="win"></i></div>
+    <div class="ground"></div>
+    <div class="command cm1">台詞</div><div class="command cm2">分岐</div><div class="command cm3">キャラクター</div><div class="command cm4">世界設定</div>
+    <div class="hero walk"><i class="shadow"></i><i class="hair"></i><i class="face"></i><i class="body"></i><i class="belt"></i><i class="legL"></i><i class="legR"></i><i class="shoeL"></i><i class="shoeR"></i></div>
+  </div>
+  <div class="msgbox top"><span class="name">SCENE 01</span><span>シナリオの世界は、</span><span>見るものすべてが新鮮だった。</span></div>
+</section>
+
+<section id="s2" class="scene s2">
+  <div class="stage">
+    <div class="ground"></div><div class="rain"></div><div class="lightning"></div>
+    <div class="hero run"><i class="shadow"></i><i class="hair"></i><i class="face"></i><i class="body"></i><i class="belt"></i><i class="legL"></i><i class="legR"></i><i class="shoeL"></i><i class="shoeR"></i></div>
+    <div class="rival"><i class="head"></i><i class="body"></i><i class="legs"></i></div><div class="wave"></div>
+  </div>
+  <div class="msgbox top"><span class="name">SCENE 02</span><span>そして、才能の限界を知った。</span><span>天才は、近いようで遠かった。</span></div>
+</section>
+
+<section id="s3" class="scene s3">
+  <div class="stage">
+    <div class="surface"></div><div class="bubble bb1"></div><div class="bubble bb2"></div><div class="bubble bb3"></div>
+    <div class="hero"><i class="shadow"></i><i class="hair"></i><i class="face"></i><i class="body"></i><i class="belt"></i><i class="legL"></i><i class="legR"></i><i class="shoeL"></i><i class="shoeR"></i></div>
+    <div class="pixelClock pcA"><i></i></div>
+    <div class="pixelClock pcB"><i></i></div>
+    <div class="pixelClock pcC"><i></i></div>
+    <div class="pixelClock pcD"><i></i></div>
+  </div>
+  <div class="msgbox bottom"><span class="name">SCENE 03</span><span>それでも、自分を信じた。</span><span>ただ、書き続けた。</span></div>
+</section>
+
+<section id="s4" class="scene s4">
+  <div class="stage">
+    <div class="path"></div><div class="empty-party"></div>
+    <div class="hero walk"><i class="shadow"></i><i class="hair"></i><i class="face"></i><i class="body"></i><i class="belt"></i><i class="legL"></i><i class="legR"></i><i class="shoeL"></i><i class="shoeR"></i></div>
+    <div class="sea leftsea"><i class="foam"></i></div><div class="sea rightsea"><i class="foam"></i></div>
+  </div>
+  <div class="msgbox top"><span class="name">SCENE 04</span><span>遠くまで来た。</span><span>でも、隣には誰もいなかった。</span></div>
+</section>
+
+<section id="s5" class="scene s5">
+  <div class="stage">
+    <div class="ground"></div>
+    <div class="letter l1"></div><div class="letter l2"></div><div class="letter l3"></div>
+    <div class="support sp1">「あなたの物語が好きです」</div>
+    <div class="support sp2">「応援してる」</div>
+    <div class="support sp3">「頑張って」</div>
+    <div class="hero"><i class="shadow"></i><i class="hair"></i><i class="face"></i><i class="body"></i><i class="belt"></i><i class="legL"></i><i class="legR"></i><i class="shoeL"></i><i class="shoeR"></i></div>
+  </div>
+  <div class="msgbox bottom"><span class="name">SCENE 05</span><span>一人だと思っていた。</span></div>
+</section>
+
+<section id="s6" class="scene s6">
+  <div class="stage">
+    <div class="ground"></div><canvas id="threadCanvas"></canvas>
+    <div class="emotion happy"><i class="mouth"></i></div>
+    <div class="emotion sad"><i class="mouth"></i><i class="tear"></i></div>
+    <div class="emotion angry"><i class="mouth"></i></div>
+    <div class="emotion love"><i class="mouth"></i></div>
+    <div class="emotion calm"><i class="mouth"></i></div>
+    <div class="hero"><i class="shadow"></i><i class="hair"></i><i class="face"></i><i class="body"></i><i class="belt"></i><i class="legL"></i><i class="legR"></i><i class="shoeL"></i><i class="shoeR"></i></div>
+  </div>
+  <div class="msgbox top"><span class="name">LAST SCENE</span><span>物語は、人と人をつなぐ。</span><span>だから、また紡いでいる。</span></div>
+  <div class="endline" id="endline">物語は、素晴らしい。</div>
+  <div class="fadeout" id="fadeout"></div>
+</section>
+
+<div class="progress"><i id="bar"></i></div>
+</div>
+
+<script>
+const scenes=[...document.querySelectorAll('.scene')];
+const S=id=>document.getElementById(id);
+const bar=S('bar');let timers=[],raf=0;
+function show(id){scenes.forEach(x=>x.classList.remove('active'));S(id).classList.add('active')}
+function later(ms,fn){timers.push(setTimeout(fn,ms))}
+function run(){
+ timers.forEach(clearTimeout);timers=[];
+ show('s1');
+ const t0=performance.now(),total=60000;
+ const tick=t=>{bar.style.width=Math.min(100,(t-t0)/total*100)+'%';if(t-t0<total)raf=requestAnimationFrame(tick)};
+ raf=requestAnimationFrame(tick);
+
+ later(8500,()=>show('s2'));
+ later(17000,()=>show('s3'));
+ later(29200,()=>{show('s4');later(650,()=>S('s4').classList.add('open'))});
+ later(39000,()=>{show('s5');later(1200,()=>S('s5').classList.add('p1'));later(3000,()=>S('s5').classList.add('p2'));later(4900,()=>S('s5').classList.add('p3','light'))});
+ later(50500,()=>{show('s6');drawThreads();later(1100,()=>S('s6').classList.add('lit'))});
+ later(56000,()=>S('endline').classList.add('show'));
+ later(58500,()=>S('fadeout').classList.add('show'));
+}
+let started=false;
+function begin(){
+ if(started)return;
+ started=true;
+ S('start').classList.add('go');
+ setTimeout(run,360);
+}
+S('startBtn').addEventListener('click',begin);
+setTimeout(begin,1640);
+
+function drawThreads(){
+ const c=S('threadCanvas'),ctx=c.getContext('2d'),r=c.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);
+ c.width=r.width*d;c.height=r.height*d;ctx.scale(d,d);
+ const W=r.width,H=r.height,cx=W/2,cy=H*.76;
+ const pts=[[W*.30,H*.33],[W*.39,H*.46],[W*.70,H*.33],[W*.61,H*.46],[W*.50,H*.24]];
+ const cols=['#ff758f','#65d9ff','#ff7868','#ff70bb','#a9ff9b'];
+ let p=0;
+ function f(){
+  ctx.clearRect(0,0,W,H);
+  pts.forEach((pt,i)=>{
+   const q=Math.max(0,Math.min(1,p-i*.13)); if(q<=0)return;
+   const [x,y]=pt;
+   ctx.strokeStyle=cols[i];ctx.lineWidth=3;ctx.shadowBlur=12;ctx.shadowColor=cols[i];
+   ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+(x-cx)*q,cy+(y-cy)*q);ctx.stroke();
+  });
+  p+=.055;if(p<1.35)requestAnimationFrame(f)
+ } f();
+}
+</script>
+</body>
+</html>
