@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>RUKA Motion Demo</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#09090d;font-family:Arial,sans-serif}
+#stage{position:relative;margin:auto;height:100svh;max-width:56.25svh;aspect-ratio:9/16;overflow:hidden;color:#fff;
+background:radial-gradient(circle at 50% 34%,#35353e 0,#17171d 42%,#08080b 82%)}
+#stage:before{content:"";position:absolute;inset:0;background:
+linear-gradient(90deg,#ffffff09 1px,transparent 1px),linear-gradient(#ffffff09 1px,transparent 1px);
+background-size:30px 30px;opacity:.7}
+#logo{position:absolute;top:7%;left:7%;font-size:min(15vw,76px);font-weight:900;letter-spacing:-.07em;opacity:0;
+transform:translateY(-10px);transition:.45s}
+#small{position:absolute;top:15.5%;left:8%;font-size:min(3vw,15px);letter-spacing:.28em;opacity:0;transition:.45s}
+#actor{position:absolute;width:180px;height:210px;left:-45%;bottom:17.5%;z-index:5;
+background-image:url("assets/ruka-sprites.png");background-repeat:no-repeat;
+background-size:4140px 210px;
+filter:drop-shadow(0 15px 8px #0008);transform-origin:50% 92%;
+image-rendering:auto}
+.floor{position:absolute;left:6%;right:6%;bottom:17%;height:2px;background:#ffffff42;box-shadow:0 0 24px #ffffff20}
+#caption{position:absolute;left:5%;right:5%;bottom:8%;z-index:10;text-align:center;font-weight:900;
+font-size:min(4vw,19px);letter-spacing:.13em;text-shadow:0 2px 8px #000}
+#fx{position:absolute;inset:0;z-index:8;pointer-events:none}
+.fx{position:absolute;font-size:min(9vw,44px);animation:float 1.45s ease-out forwards}
+@keyframes float{0%{opacity:0;transform:translateY(18px) scale(.5)}25%{opacity:1}
+100%{opacity:0;transform:translateY(-125px) scale(1.2) rotate(12deg)}}
+@keyframes bob{50%{transform:translateY(-5px)}}
+@keyframes hop{45%{transform:translateY(-90px)}70%{transform:translateY(4px) scale(1.04,.96)}}
+@keyframes danceMove{20%{transform:rotate(-6deg) translateY(-6px)}40%{transform:rotate(6deg)}
+60%{transform:rotate(-5deg) translateY(-7px)}80%{transform:rotate(6deg)}}
+#replay{position:absolute;top:4%;right:5%;z-index:20;border:1px solid #ffffff40;background:#0005;color:#fff;
+padding:8px 12px;border-radius:999px;font-size:11px;letter-spacing:.08em}
+</style>
+</head>
+<body>
+<main id="stage">
+<div id="logo">RUKA</div><div id="small">20 SECOND MOTION</div>
+<div id="actor" aria-label="RUKA"></div>
+<div id="fx"></div><div class="floor"></div>
+<div id="caption">READY...</div>
+<button id="replay">↻ REPLAY</button>
+</main>
+<script>
+const a=document.querySelector("#actor"), cap=document.querySelector("#caption"),
+logo=document.querySelector("#logo"), small=document.querySelector("#small"), fx=document.querySelector("#fx");
+const FW=180, TOTAL=23;
+const IDLE=[0, 1, 2, 3, 4], WALK=[5, 6, 7, 8, 9, 10, 11], RUN=[12, 13, 14, 15, 16, 17];
+const JUMP=18, SIT=19, ITEM=20, HEART=21, DANCE=22;
+let timers=[], loopTimer=null;
+
+function frame(i){a.style.backgroundPosition=`-${i*FW}px 0px`;}
+function stopLoop(){if(loopTimer) clearInterval(loopTimer); loopTimer=null;}
+function loop(seq,fps=7){
+  stopLoop(); let j=0; frame(seq[0]);
+  loopTimer=setInterval(()=>{j=(j+1)%seq.length;frame(seq[j]);},1000/fps);
+}
+function pose(i){stopLoop();frame(i);}
+function later(ms,fn){timers.push(setTimeout(fn,ms));}
+function say(s){cap.textContent=s;}
+function burst(symbol,n=6){
+ for(let i=0;i<n;i++) later(i*100,()=>{
+   const e=document.createElement("span");e.className="fx";e.textContent=symbol;
+   e.style.left=(40+Math.random()*30)+"%";e.style.top=(36+Math.random()*23)+"%";
+   fx.appendChild(e);setTimeout(()=>e.remove(),1500);
+ });
+}
+function resetActor(){
+ stopLoop(); timers.forEach(clearTimeout); timers=[]; fx.innerHTML="";
+ a.style.transition="none";a.style.left="-45%";a.style.bottom="17.5%";a.style.transform="";
+ a.style.animation="";logo.style.opacity=0;logo.style.transform="translateY(-10px)";
+ small.style.opacity=0;small.textContent="20 SECOND MOTION";say("READY...");pose(RUN[0]);
+}
+function run(){
+ resetActor();
+
+ // 0-2s: actual running frames while crossing into the scene
+ loop(RUN,10); say("RUKA RUNS IN");
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{
+   a.style.transition="left 1.75s linear";a.style.left="29%";
+ }));
+
+ // 2-5s: stop + idle sprites
+ later(1800,()=>{loop(IDLE,4);say("HELLO, RUKA.");a.style.animation="bob 1s ease-in-out infinite";});
+ later(2300,()=>{logo.style.opacity=1;logo.style.transform="translateY(0)";small.style.opacity=1;});
+
+ // 5-8s: heart pose, then idle
+ later(5000,()=>{a.style.animation="";pose(HEART);say("♡");burst("♥",7);});
+ later(6650,()=>{loop(IDLE,4);a.style.animation="bob 1s ease-in-out infinite";say("READY?");});
+
+ // 8-9.5s: dedicated jump pose + vertical movement
+ later(8000,()=>{a.style.animation="hop 1.15s ease-in-out";pose(JUMP);say("JUMP!");});
+ later(9150,()=>{a.style.animation="";loop(WALK,9);say("WALK →");
+   a.style.transition="left 2.2s linear";a.style.left="51%";
+ });
+
+ // 11.4-12s: turn back using run sprites
+ later(11350,()=>{loop(RUN,10);a.style.transition="left .65s linear";a.style.left="31%";});
+
+ // 12-16s: dance pose + body rhythm + notes
+ later(12000,()=>{pose(DANCE);a.style.animation="danceMove .6s ease-in-out infinite";say("DANCE MODE");burst("♪",10);});
+
+ // 16-17.5s: sit
+ later(16000,()=>{a.style.animation="";pose(SIT);say("BREAK TIME");});
+
+ // 17.5-20s: item pose -> heart final, zoom
+ later(17400,()=>{pose(ITEM);say("FOUND SOMETHING!");});
+ later(18500,()=>{pose(HEART);say("RUKA");small.textContent="SEE YOU NEXT TIME";burst("♥",4);
+   a.style.transition="transform 1.2s ease";a.style.transform="scale(1.2)";
+ });
+ later(19900,()=>stopLoop());
+}
+document.querySelector("#replay").addEventListener("click",run);
+run();
+</script>
+</body>
+</html>
