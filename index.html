@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>60 SECOND STORIES</title>
+<title>CODE MOVIES</title>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#18141b;color:#f5eee6;font-family:"Yu Gothic","Hiragino Kaku Gothic ProN",system-ui,sans-serif}
@@ -15,36 +15,51 @@ h1{margin:0;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:clamp
 header p{margin:14px 0 0;line-height:1.8;opacity:.72}
 .grid{display:grid;gap:16px}
 a{display:block;color:inherit;text-decoration:none;border:1px solid rgba(255,255,255,.15);background:#231e27;padding:22px;border-radius:16px;transition:.2s}
+a:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.28)}
 a:active{transform:scale(.985)}
 .num{font:800 12px/1 ui-monospace,monospace;letter-spacing:.15em;opacity:.48}
 h2{margin:8px 0 6px;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:clamp(22px,5vw,31px)}
 .card p{margin:0;line-height:1.7;opacity:.68;font-size:14px}
 .arrow{margin-top:16px;font-weight:800;font-size:13px;letter-spacing:.08em}
-footer{margin-top:24px;font-size:11px;opacity:.35;text-align:center}
+.motion{background:linear-gradient(135deg,#211e27,#16171d)}
+.motion .num{opacity:.7}
+footer{margin-top:24px;font-size:11px;opacity:.35;text-align:center;letter-spacing:.15em}
 </style>
 </head>
 <body>
 <main>
 <header>
-<small>60 SECOND STORIES</small>
-<h1>60秒で描く、<br>人生と物語。</h1>
-<p>HTML / CSS / JavaScriptだけで制作した短編作品。</p>
+<small>CODE MOVIES</small>
+<h1>コードで描く、<br>短編映像。</h1>
+<p>HTML / CSS / JavaScriptだけで制作した短編作品とモーションデモ。</p>
 </header>
+
 <section class="grid">
+
 <a class="card" href="./life/">
 <div class="num">STORY 01</div>
 <h2>好きなものが、私をつくった。</h2>
 <p>ヒーロー、サッカー、シナリオ。そして、大切な人。人生で出会った「好き」を歩く60秒。</p>
 <div class="arrow">OPEN STORY →</div>
 </a>
+
 <a class="card" href="./scenario/">
 <div class="num">STORY 02</div>
 <h2>物語は、素晴らしい。</h2>
 <p>憧れ、挫折、孤独、支えてくれた言葉。シナリオライターだった頃をレトロJRPG風に描く60秒。</p>
 <div class="arrow">OPEN STORY →</div>
 </a>
+
+<a class="card motion" href="./ruka-motion-pc/">
+<div class="num">MOTION 01</div>
+<h2>RUKA</h2>
+<p>キャラクターシートのモーション素材を使って制作した、20秒のブラウザアニメーション。</p>
+<div class="arrow">OPEN MOTION →</div>
+</a>
+
 </section>
-<footer>60 SECOND STORIES</footer>
+
+<footer>CODE MOVIES</footer>
 </main>
 </body>
 </html>
