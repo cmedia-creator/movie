@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d12">
+<title>60 SECOND LIFE</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#050608;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;overflow:hidden}button{font:inherit}
+#app{position:fixed;inset:0;width:100vw;height:100dvh;overflow:hidden;background:#15171b;isolation:isolate}
+#sky{position:absolute;inset:0 0 43% 0;background:linear-gradient(#22262d,#5a5d63);transition:background 1.3s ease}
+#sun{position:absolute;width:68px;height:68px;border-radius:50%;top:10%;right:12%;background:#d7d7d7;opacity:.3;transition:1.3s}
+#mountains{position:absolute;left:-10%;right:-10%;bottom:40%;height:30%;background:#3a3d43;clip-path:polygon(0 100%,10% 65%,22% 80%,37% 27%,53% 76%,68% 43%,82% 72%,100% 42%,100% 100%);transition:background 1.3s}
+#ground{position:absolute;inset:55% 0 0;background:#32343a;transition:background 1.3s}
+#road{position:absolute;left:50%;bottom:-8%;width:135%;height:53%;transform:translateX(-50%);background:#565960;clip-path:polygon(42% 0,58% 0,78% 100%,22% 100%);transition:background 1.3s}
+#road:after{content:"";position:absolute;left:49.4%;top:0;width:1.2%;height:100%;background:repeating-linear-gradient(to bottom,#d8d8d8 0 24px,transparent 24px 46px);opacity:.35}
+#stadium,#scriptWorld,#heroBeam,#finalGlow{position:absolute;inset:0;opacity:0;transition:opacity 1s;pointer-events:none}
+#heroBeam{background:radial-gradient(ellipse at 50% 28%,rgba(255,255,255,.72),rgba(255,255,255,0) 28%)}
+#giant{position:absolute;left:50%;top:14%;width:110px;height:225px;transform:translateX(-50%);filter:drop-shadow(0 0 22px rgba(255,80,76,.7))}
+#giant .head{position:absolute;left:35px;top:0;width:40px;height:44px;background:#e3e3e3;border-radius:50% 50% 42% 42%}
+#giant .body{position:absolute;left:24px;top:38px;width:62px;height:118px;background:linear-gradient(90deg,#ddd 0 32%,#d84d47 32% 68%,#ddd 68%);clip-path:polygon(18% 0,82% 0,100% 20%,76% 100%,24% 100%,0 20%)}
+#giant .arm{position:absolute;top:50px;width:18px;height:108px;background:#ddd;border-radius:12px;transform-origin:top}.a1{left:13px;transform:rotate(18deg)}.a2{right:13px;transform:rotate(-18deg)}
+#stadium .field{position:absolute;left:6%;right:6%;bottom:10%;height:34%;border:5px solid rgba(255,255,255,.8);border-radius:48%;background:repeating-linear-gradient(90deg,#2f9d50 0 34px,#35a857 34px 68px)}
+#stadium .goal{position:absolute;right:11%;bottom:19%;width:28%;height:16%;border:5px solid #fff;border-bottom:none}
+#ball{position:absolute;width:34px;height:34px;border-radius:50%;background:#f6f6f6;left:78%;bottom:22%;opacity:0;box-shadow:inset 0 0 0 5px #111;transition:transform 4.5s cubic-bezier(.2,.75,.25,1),opacity .3s}
+#scriptWorld .paper{position:absolute;padding:11px 16px;border:2px solid rgba(255,255,255,.8);background:rgba(9,10,14,.85);border-radius:10px;font-weight:800;box-shadow:0 10px 24px #0008}.p1{left:8%;top:24%;transform:rotate(-8deg)}.p2{right:8%;top:32%;transform:rotate(7deg)}.p3{left:35%;top:16%;transform:rotate(3deg)}
+#scriptWorld .branch{position:absolute;left:50%;bottom:18%;width:6px;height:34%;background:#f2f2f2;transform-origin:bottom}.b1{transform:rotate(-25deg)}.b2{transform:rotate(25deg)}
+#finalGlow{background:radial-gradient(circle at 50% 70%,rgba(255,206,146,.25),transparent 35%)}
+.character{position:absolute;bottom:18%;width:58px;height:118px;z-index:8;filter:drop-shadow(0 9px 4px rgba(0,0,0,.45));transform-origin:bottom center}.character.player{left:41%}.character.partner{left:56%;opacity:0;transform:translateX(80px);transition:opacity 1.2s,transform 1.8s}
+.character span{position:absolute;display:block}.character .head{left:16px;top:7px;width:28px;height:28px;background:#d3aa8f;border-radius:5px}.character .hair{left:11px;top:0;width:38px;height:17px;background:#17181b;border-radius:10px 10px 3px 3px}.character .torso{left:9px;top:34px;width:42px;height:47px;background:#595c63;border-radius:5px;transition:background .8s}.character .arm{top:41px;width:10px;height:42px;background:#d3aa8f;border-radius:6px;transform-origin:top}.character .al{left:3px}.character .ar{right:3px}.character .leg{top:77px;width:14px;height:41px;background:#2b2e34;border-radius:4px;transform-origin:top}.character .ll{left:12px}.character .lr{right:12px}.character .scarf{left:5px;top:29px;width:50px;height:10px;background:#e44742;border-radius:4px;opacity:0;transform:rotate(-6deg);transition:.7s}.partner .torso{background:#76586c}.partner .hair{height:24px;border-radius:12px 12px 8px 8px}
+.walk{animation:bob .48s infinite alternate}.walk .ll{animation:leg1 .48s infinite alternate}.walk .lr{animation:leg2 .48s infinite alternate}.walk .al{animation:arm1 .48s infinite alternate}.walk .ar{animation:arm2 .48s infinite alternate}@keyframes bob{to{transform:translateY(-3px)}}@keyframes leg1{to{transform:rotate(22deg)}}@keyframes leg2{to{transform:rotate(-22deg)}}@keyframes arm1{to{transform:rotate(-17deg)}}@keyframes arm2{to{transform:rotate(17deg)}}
+.copy{position:absolute;z-index:20;left:7%;right:7%;top:max(7%,calc(env(safe-area-inset-top) + 18px));text-shadow:0 3px 14px rgba(0,0,0,.75)}.eyebrow{font-size:11px;letter-spacing:.19em;font-weight:900;opacity:.78}.copy h1{margin:10px 0 8px;font-size:clamp(27px,7.2vw,44px);line-height:1.22;letter-spacing:.01em;word-break:keep-all}.copy p{margin:0;font-size:clamp(14px,3.8vw,20px);line-height:1.65;font-weight:700;color:#f0f0f0;word-break:keep-all}.phrase{display:inline-block;white-space:nowrap}.overlay h2,.overlay p{word-break:keep-all}.overlay .phrase{display:inline-block;white-space:nowrap}
+.icons{position:absolute;z-index:15;right:6%;top:39%;display:grid;gap:9px}.icon{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:rgba(5,6,8,.63);border:1px solid rgba(255,255,255,.18);font-weight:900;opacity:0;transform:scale(.45);transition:.5s}.show{opacity:1;transform:scale(1)}
+#progress{position:absolute;z-index:30;left:7%;right:7%;bottom:max(4%,calc(env(safe-area-inset-bottom) + 10px));height:3px;background:rgba(255,255,255,.15)}#bar{height:100%;width:0;background:white}
+.overlay{position:absolute;z-index:100;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:10%;background:linear-gradient(rgba(5,6,8,.92),rgba(5,6,8,.98));transition:opacity .6s}.overlay.hidden{opacity:0;pointer-events:none}.kicker{font-size:11px;letter-spacing:.25em;font-weight:900;opacity:.65}.overlay h2{margin:14px 0 10px;font-size:clamp(30px,8vw,48px);line-height:1.2}.overlay p{margin:0;max-width:520px;color:#c7c7c7;line-height:1.7}.overlay button{margin-top:28px;border:0;border-radius:999px;padding:15px 44px;background:#fff;color:#111;font-weight:900;letter-spacing:.08em;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+/* phases */
+.phase-hero #sky{background:linear-gradient(#243349,#a66d65)}.phase-hero #sun{background:#ffd7b6;opacity:.9;box-shadow:0 0 45px #ff9d75}.phase-hero #mountains{background:#555268}.phase-hero #road{background:#5b494f}.phase-hero #heroBeam{opacity:1}.phase-hero .player .scarf{opacity:1}.phase-hero #iHero{opacity:1;transform:scale(1)}
+.phase-soccer #sky{background:linear-gradient(#58a6df,#bce9ff)}.phase-soccer #sun{background:#fff1a1;opacity:1;box-shadow:0 0 40px #ffe97b}.phase-soccer #mountains{background:#559264}.phase-soccer #ground{background:#3f8c55}.phase-soccer #road{background:#477a50}.phase-soccer #stadium{opacity:1}.phase-soccer #ball{opacity:1;transform:translateX(-250px) rotate(-540deg)}.phase-soccer .player .torso{background:#286ca3}.phase-soccer #iHero,.phase-soccer #iBall{opacity:1;transform:scale(1)}
+.phase-script #sky{background:linear-gradient(#161b2b,#433c61)}.phase-script #sun{opacity:.1}.phase-script #mountains{background:#2d3140}.phase-script #ground{background:#232632}.phase-script #road{background:#383b49}.phase-script #scriptWorld{opacity:1}.phase-script .player .torso{background:#30354b}.phase-script #iHero,.phase-script #iBall,.phase-script #iScript{opacity:1;transform:scale(1)}
+.phase-wife #sky,.phase-final #sky{background:linear-gradient(#744a60,#efa98f)}.phase-wife #sun,.phase-final #sun{background:#ffe3c7;opacity:.95;box-shadow:0 0 55px #ffd0ad}.phase-wife #mountains,.phase-final #mountains{background:#7b675f}.phase-wife #ground,.phase-final #ground{background:#557b57}.phase-wife #road,.phase-final #road{background:#74635f}.phase-wife .partner,.phase-final .partner{opacity:1;transform:translateX(0)}.phase-wife #iHero,.phase-wife #iBall,.phase-wife #iScript,.phase-wife #iHeart,.phase-final .icon{opacity:1;transform:scale(1)}.phase-final #finalGlow{opacity:1}
+@media (min-width:700px){#app{left:50%;right:auto;width:56.25vh;transform:translateX(-50%);box-shadow:0 0 70px #000}}
+</style>
+</head>
+<body>
+<div id="app" class="phase-intro">
+  <div id="sky"><div id="sun"></div></div>
+  <div id="mountains"></div><div id="ground"></div><div id="road"></div>
+  <div id="heroBeam"><div id="giant"><span class="head"></span><span class="body"></span><span class="arm a1"></span><span class="arm a2"></span></div></div>
+  <div id="stadium"><div class="field"></div><div class="goal"></div></div><div id="ball"></div>
+  <div id="scriptWorld"><div class="paper p1">「行く」</div><div class="paper p2">「戻る」</div><div class="paper p3">「続ける」</div><div class="branch b1"></div><div class="branch b2"></div></div>
+  <div id="finalGlow"></div>
+
+  <div class="character player walk"><span class="head"></span><span class="hair"></span><span class="torso"></span><span class="arm al"></span><span class="arm ar"></span><span class="leg ll"></span><span class="leg lr"></span><span class="scarf"></span></div>
+  <div id="partner" class="character partner"><span class="head"></span><span class="hair"></span><span class="torso"></span><span class="arm al"></span><span class="arm ar"></span><span class="leg ll"></span><span class="leg lr"></span></div>
+
+  <div class="icons"><div id="iHero" class="icon">✦</div><div id="iBall" class="icon">●</div><div id="iScript" class="icon">A</div><div id="iHeart" class="icon">♥</div></div>
+  <div class="copy"><div id="chapter" class="eyebrow">PROLOGUE</div><h1 id="headline"><span class="phrase">まだ、</span><span class="phrase">何者でもなかった。</span></h1><p id="subline"><span class="phrase">ただ一本道を</span><span class="phrase">歩いていた。</span></p></div>
+  <div id="progress"><div id="bar"></div></div>
+
+  <div id="start" class="overlay"><div class="kicker">60 SECOND LIFE</div><h2><span class="phrase">好きなものが、</span><span class="phrase">私をつくった。</span></h2><p><span class="phrase">ヒーロー、サッカー、物語。</span><span class="phrase">そして、人生を一緒に歩く人。</span></p><button id="startBtn">START</button></div>
+  <div id="end" class="overlay hidden"><div class="kicker">EPILOGUE</div><h2><span class="phrase">好きなものに出会うたび、</span><br><span class="phrase">人生は少しずつ</span><span class="phrase">変わっていった。</span></h2><p><span class="phrase">そして、今は</span><span class="phrase">二人で歩いている。</span></p><button id="replayBtn">REPLAY</button></div>
+</div>
+<script>
+(()=>{
+const app=document.getElementById('app'),start=document.getElementById('start'),end=document.getElementById('end'),startBtn=document.getElementById('startBtn'),replayBtn=document.getElementById('replayBtn'),chapter=document.getElementById('chapter'),headline=document.getElementById('headline'),subline=document.getElementById('subline'),bar=document.getElementById('bar'),partner=document.getElementById('partner');
+const scenes=[
+[0,'phase-intro','PROLOGUE',['まだ、','何者でもなかった。'],['ただ一本道を','歩いていた。']],
+[4200,'phase-hero','CHAPTER 01 / HERO',['最初に好きになったのは、','ヒーローだった。'],['強くて、まっすぐで、','子どもの自分には眩しかった。']],
+[15000,'phase-soccer','CHAPTER 02 / FOOTBALL',['次に、','サッカーに夢中になった。'],['走って、蹴って、','悔しがることまで楽しかった。']],
+[27000,'phase-script','CHAPTER 03 / STORY',['その次は、','物語をつくること。'],['ゲームシナリオを書いて、','選択肢の先に世界をつくった。']],
+[41500,'phase-wife','CHAPTER 04 / YOU',['そして、','妻に出会った。'],['好きなものを追いかけていた道に、','もう一人が並んだ。']],
+[53000,'phase-final','EPILOGUE',['好きなものが、','私をつくった。'],['そして、今は','二人で歩いている。']]];
+let timers=[],raf=0,t0=0; const D=60000;
+function renderPhrases(el,parts){el.innerHTML=parts.map(t=>`<span class="phrase">${t}</span>`).join('');}
+function setScene(s){app.className=s[1];chapter.textContent=s[2];renderPhrases(headline,s[3]);renderPhrases(subline,s[4]);}
+function clearRun(){timers.forEach(clearTimeout);timers=[];cancelAnimationFrame(raf);bar.style.width='0%';end.classList.add('hidden');partner.classList.remove('walk');setScene(scenes[0]);}
+function later(fn,ms){timers.push(setTimeout(fn,ms));}
+function progress(){const p=Math.min(1,(performance.now()-t0)/D);bar.style.width=(p*100)+'%';if(p<1)raf=requestAnimationFrame(progress);}
+function begin(){clearRun();start.classList.add('hidden');t0=performance.now();scenes.slice(1).forEach(s=>later(()=>setScene(s),s[0]));later(()=>partner.classList.add('walk'),43200);later(()=>end.classList.remove('hidden'),D);raf=requestAnimationFrame(progress);}
+startBtn.addEventListener('click',begin);replayBtn.addEventListener('click',begin);
+})();
+</script>
+</body>
+</html>
