@@ -1,14 +1,9 @@
-RUKA 20 SECOND MOTION / clean-v3
+RUKA Motion Demo - mobile header fix
 
-変更点
-- 元の修正済みRUKAスプライト（assets/ruka-sprites.png）は一切変更していません。
-- 16秒以降の間延びを解消。
-  15.8s FOUND SOMETHING!
-  17.0s RUKA + HEART
-  18.0s SEE YOU NEXT TIME
-  19.0s 小さくジャンプ
-  19.65-20.0s フェードアウト
-- 上部サブタイトルを少し下げ、文字サイズ・字間を微調整してRUKAロゴとの重なりを改善。
-- REPLAY時はフェード状態をリセットします。
-
-GitHubでは、このフォルダ内の index.html と assets フォルダをそのまま配置してください。
+Changes from clean-v3:
+- PC layout unchanged.
+- On screens 600px wide or less, RUKA + subtitle are grouped in a vertical header.
+- Prevents title/subtitle overlap caused by fixed absolute top positions and mobile font rendering.
+- Added safe-area support for phones with notches/dynamic islands.
+- SEE YOU NEXT TIME stays on one line where possible.
+- Character sprite and 20-second animation timing are unchanged.

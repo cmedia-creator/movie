@@ -35,11 +35,48 @@ font-size:min(4vw,19px);letter-spacing:.13em;text-shadow:0 2px 8px #000}
 @keyframes stageFade{to{opacity:0}}
 #replay{position:absolute;top:4%;right:5%;z-index:20;border:1px solid #ffffff40;background:#0005;color:#fff;
 padding:8px 12px;border-radius:999px;font-size:11px;letter-spacing:.08em}
+
+/* Mobile-only header fix. Desktop keeps the original absolute coordinates. */
+@media (max-width:600px){
+  #header{
+    position:absolute;
+    z-index:12;
+    top:max(6.2%,calc(env(safe-area-inset-top) + 18px));
+    left:7%;
+    right:7%;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:9px;
+    pointer-events:none;
+  }
+  #logo{
+    position:static;
+    font-size:clamp(38px,14vw,58px);
+    line-height:.88;
+    letter-spacing:-.07em;
+    white-space:nowrap;
+  }
+  #small{
+    position:static;
+    font-size:clamp(10px,2.9vw,13px);
+    line-height:1.15;
+    letter-spacing:.20em;
+    white-space:nowrap;
+    max-width:100%;
+  }
+  #replay{
+    top:max(2.2%,calc(env(safe-area-inset-top) + 8px));
+    right:4%;
+    padding:7px 10px;
+    font-size:10px;
+  }
+}
 </style>
 </head>
 <body>
 <main id="stage">
-<div id="logo">RUKA</div><div id="small">20 SECOND MOTION</div>
+<div id="header"><div id="logo">RUKA</div><div id="small">20 SECOND MOTION</div></div>
 <div id="actor" aria-label="RUKA"></div>
 <div id="fx"></div><div class="floor"></div>
 <div id="caption">READY...</div>
