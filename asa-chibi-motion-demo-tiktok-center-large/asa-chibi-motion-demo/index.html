@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b10">
+<title>ASA Motion Demo</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08080c;font-family:Arial,"Noto Sans JP",sans-serif}
+body{display:grid;place-items:center}
+#stage{
+  position:relative;width:min(100vw,56.25svh);height:100svh;overflow:hidden;color:#fff;
+  background:
+    radial-gradient(circle at 50% 36%,rgba(145,96,120,.22),transparent 37%),
+    linear-gradient(180deg,#18131b 0%,#0e0c12 53%,#08080c 100%);
+}
+#stage:before{
+  content:"";position:absolute;inset:0;opacity:.33;
+  background:linear-gradient(90deg,#ffffff08 1px,transparent 1px),linear-gradient(#ffffff08 1px,transparent 1px);
+  background-size:28px 28px
+}
+#stage:after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 56%,transparent 40%,rgba(0,0,0,.68) 100%)
+}
+#header{
+  position:absolute;z-index:12;top:max(5.6%,calc(env(safe-area-inset-top) + 18px));left:7%;
+  display:flex;flex-direction:column;gap:23px;pointer-events:none
+}
+#logo{font-size:clamp(48px,14vw,74px);font-weight:900;line-height:.82;letter-spacing:-.075em;opacity:0;transform:translateY(-8px);transition:.4s}
+#sub{font-size:clamp(10px,2.6vw,13px);letter-spacing:.27em;color:#ffffffb8;opacity:0;transition:.4s;white-space:nowrap}
+
+#actorPos{
+  position:absolute;z-index:5;left:50%;bottom:14.9%;
+  width:min(88vw,470px);aspect-ratio:1/1;transform-origin:50% 90%;transform:translateX(-50%);will-change:transform
+}
+#physics,#breath,#blend{position:absolute;inset:0;transform-origin:50% 89%}
+#breath{animation:breathe 2.45s ease-in-out infinite}
+#blend img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;
+  filter:drop-shadow(0 15px 8px rgba(0,0,0,.55));opacity:0;user-select:none;-webkit-user-drag:none
+}
+#a{opacity:1}
+@keyframes breathe{
+  0%,100%{transform:translateY(0) scale(1)}
+  36%{transform:translateY(-1.8px) scale(1.002,.999)}
+  70%{transform:translateY(-.3px) scale(.999,1.001)}
+}
+#shadow{
+  position:absolute;z-index:4;left:50%;bottom:16.72%;width:min(33vw,175px);height:min(4.3vw,24px);
+  transform:translateX(-50%);border-radius:50%;
+  background:radial-gradient(ellipse at center,#0007 0,#0004 55%,transparent 82%);
+  filter:blur(2px);animation:shadowBreath 2.45s ease-in-out infinite
+}
+@keyframes shadowBreath{
+  0%,100%{transform:translateX(-50%) scale(1);opacity:.9}
+  36%{transform:translateX(-50%) scale(.97,.93);opacity:.79}
+  70%{transform:translateX(-50%) scale(.99,.97);opacity:.84}
+}
+.floor{position:absolute;left:8%;right:8%;bottom:16.85%;height:1px;background:linear-gradient(90deg,transparent,#ffffff62,transparent);box-shadow:0 0 24px #ffffff20}
+#caption{
+  position:absolute;z-index:12;left:7%;right:7%;bottom:max(7.2%,calc(env(safe-area-inset-bottom) + 18px));
+  text-align:center;font-size:clamp(12px,3.6vw,18px);font-weight:900;letter-spacing:.14em;text-shadow:0 3px 12px #000
+}
+#fx{position:absolute;inset:0;z-index:7;pointer-events:none}
+.fx{position:absolute;font-size:clamp(16px,4.6vw,25px);opacity:0;animation:floatFx 1.75s ease-out forwards}
+@keyframes floatFx{0%{opacity:0;transform:translateY(12px) scale(.7)}25%{opacity:.92}100%{opacity:0;transform:translateY(-58px) scale(1.04) rotate(7deg)}}
+.spark{position:absolute;width:5px;height:5px;border-radius:50%;background:#ffffffa6;opacity:0;animation:spark .8s ease-out forwards}
+@keyframes spark{0%{opacity:.8;transform:scale(.7)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.1)}}
+#replay{
+  position:absolute;z-index:15;top:max(3%,calc(env(safe-area-inset-top) + 8px));right:4%;
+  border:1px solid #ffffff40;background:#0006;color:#fff;padding:7px 10px;border-radius:999px;font-size:10px;letter-spacing:.08em
+}
+</style>
+</head>
+<body>
+<main id="stage">
+  <div id="header"><div id="logo">ASA</div><div id="sub">ANIME CHIBI MOTION</div></div>
+
+  <div id="actorPos">
+    <div id="physics">
+      <div id="breath">
+        <div id="blend">
+          <img id="a" src="assets/idle.png" alt="ASA">
+          <img id="b" src="assets/idle.png" alt="" style="opacity:0">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="shadow"></div><div id="fx"></div><div class="floor"></div>
+  <div id="caption">READY...</div>
+  <button id="replay">↻ REPLAY</button>
+</main>
+<script>
+const stage=document.querySelector("#stage"),pos=document.querySelector("#actorPos"),physics=document.querySelector("#physics"),
+shadow=document.querySelector("#shadow"),caption=document.querySelector("#caption"),logo=document.querySelector("#logo"),
+sub=document.querySelector("#sub"),fx=document.querySelector("#fx"),A=document.querySelector("#a"),B=document.querySelector("#b");
+
+const IMG={
+ idle:"assets/idle.png",smile:"assets/smile.png",wink:"assets/wink.png",serious:"assets/serious.png",charm:"assets/charm.png",
+ waveprep:"assets/waveprep.png",wave:"assets/wave.png",heartprep:"assets/heartprep.png",heart:"assets/heart.png",
+ kissprep:"assets/kissprep.png",kiss:"assets/kiss.png",dance1:"assets/dance1.png",dance2:"assets/dance2.png",dance3:"assets/dance3.png"
+};
+Object.values(IMG).forEach(src=>{const i=new Image();i.src=src});
+
+let timers=[],danceTimer=null,animations=[],active=A,passive=B,current="idle";
+function later(ms,fn){const id=setTimeout(fn,ms);timers.push(id);return id}
+function anim(el,frames,opts){const a=el.animate(frames,{fill:"forwards",...opts});animations.push(a);return a}
+function clearAll(){timers.forEach(clearTimeout);timers=[];if(danceTimer){clearInterval(danceTimer);danceTimer=null}animations.forEach(x=>{try{x.cancel()}catch(e){}});animations=[]}
+function cross(name,d=230){if(current===name)return;current=name;active.src=IMG[name];active.style.opacity=1;passive.style.opacity=0}
+function say(t){caption.style.opacity=.15;later(100,()=>{caption.textContent=t;caption.style.opacity=1})}
+function sideFx(s,n=2,side="right"){for(let i=0;i<n;i++)later(i*180,()=>{const e=document.createElement("span");e.className="fx";e.textContent=s;const l=side==="left"||(side==="both"&&i%2===0);e.style.left=l?(10+Math.random()*9)+"%":(82+Math.random()*8)+"%";e.style.top=(51+Math.random()*11)+"%";fx.appendChild(e);setTimeout(()=>e.remove(),1800)})}
+function footSpark(dir=1){for(let i=0;i<3;i++){const e=document.createElement("span");e.className="spark";e.style.left=(48+Math.random()*5)+"%";e.style.top=(80+Math.random()*2)+"%";e.style.setProperty("--dx",(dir*(6+Math.random()*9))+"px");e.style.setProperty("--dy",(-3-Math.random()*6)+"px");fx.appendChild(e);setTimeout(()=>e.remove(),850)}}
+function softPose(name,{hop=0,tilt=0,duration=900,fxSymbol=null,fxSide="right"}={}){
+  anim(physics,[
+    {transform:"translateY(0) scale(1) rotate(0)"},
+    {transform:`translateY(2px) scale(1.012,.988) rotate(${tilt*.15}deg)`,offset:.24},
+    {transform:`translateY(${-hop}px) scale(.994,1.008) rotate(${tilt}deg)`,offset:.58},
+    {transform:`translateY(.5px) scale(1.003,.999) rotate(${-tilt*.12}deg)`,offset:.84},
+    {transform:"translateY(0) scale(1) rotate(0)"}
+  ],{duration,easing:"cubic-bezier(.24,.72,.24,1)"});
+  later(190,()=>cross(name,240));
+  if(hop>0)anim(shadow,[
+    {transform:"translateX(-50%) scale(1)",opacity:.9},
+    {transform:"translateX(-50%) scale(.86,.88)",opacity:.61,offset:.48},
+    {transform:"translateX(-50%) scale(1.03,1.01)",opacity:.94,offset:.84},
+    {transform:"translateX(-50%) scale(1)",opacity:.9}
+  ],{duration,easing:"ease-out"});
+  if(fxSymbol)later(230,()=>sideFx(fxSymbol,2,fxSide));
+}
+function attention(dir=1){
+  anim(physics,[
+    {transform:"translateX(0) rotate(0)"},
+    {transform:`translateX(${dir*3}px) rotate(${dir*1.1}deg)`,offset:.4},
+    {transform:`translateX(${-dir}px) rotate(${-dir*.35}deg)`,offset:.75},
+    {transform:"translateX(0) rotate(0)"}
+  ],{duration:1080,easing:"ease-in-out"})
+}
+function dance(){
+  const seq=["dance1","dance2","dance3","dance2"],x=[-4,4,-2,3],r=[-2.1,2,-1.4,1.6];let i=0;
+  function beat(){
+    const n=i%seq.length;
+    anim(physics,[
+      {transform:"translate(0,0) rotate(0) scale(1)"},
+      {transform:`translate(${x[n]*.18}px,1.5px) rotate(${r[n]*.2}deg) scale(1.01,.99)`,offset:.25},
+      {transform:`translate(${x[n]}px,-2.8px) rotate(${r[n]}deg) scale(.996,1.006)`,offset:.58},
+      {transform:`translate(${x[n]*.4}px,0) rotate(${r[n]*.35}deg)`,offset:.84},
+      {transform:"translate(0,0) rotate(0) scale(1)"}
+    ],{duration:1160,easing:"cubic-bezier(.24,.72,.24,1)"});
+    later(220,()=>cross(seq[n],250));later(240,()=>footSpark(x[n]>=0?1:-1));i++
+  }
+  beat();danceTimer=setInterval(beat,1370)
+}
+function reset(){
+  clearAll();fx.innerHTML="";current="idle";active=A;passive=B;A.src=IMG.idle;B.src=IMG.idle;A.style.opacity=1;B.style.opacity=0;
+  pos.style.transition="none";pos.style.transform="translateX(-155%)";physics.style.transform="";shadow.style.transform="";stage.style.opacity=1;
+  logo.style.opacity=0;logo.style.transform="translateY(-8px)";sub.style.opacity=0;sub.textContent="TIKTOK MOTION DEMO";caption.textContent="READY..."
+}
+function run(){
+  reset();
+
+  say("ASA");
+  pos.style.transition="transform 2.05s cubic-bezier(.18,.72,.2,1)";
+  requestAnimationFrame(()=>requestAnimationFrame(()=>pos.style.transform="translateX(-50%)"));
+  anim(physics,[{transform:"translateY(0)"},{transform:"translateY(-3px)",offset:.25},{transform:"translateY(0)",offset:.5},{transform:"translateY(-2.5px)",offset:.75},{transform:"translateY(0)"}],{duration:2020,easing:"ease-in-out"});
+  later(450,()=>footSpark(1));later(1020,()=>footSpark(1));later(1580,()=>footSpark(1));
+
+  later(2150,()=>{say("ASA");logo.style.opacity=1;logo.style.transform="translateY(0)";sub.style.opacity=1;attention(1)});
+  later(5000,()=>{say("SMILE");softPose("smile",{hop:5.5,tilt:-.7,fxSymbol:"✦",fxSide:"right"});later(1200,()=>attention(-1))});
+  later(8100,()=>{say("WINK!");softPose("wink",{hop:2.5,tilt:1.0,fxSymbol:"♡",fxSide:"left"});later(1200,()=>attention(1))});
+  later(11100,()=>{say("SERIOUS MODE");softPose("serious",{hop:0,tilt:0,duration:1050});later(1250,()=>attention(-1))});
+  later(14100,()=>{say("COOL & CHARM");softPose("charm",{hop:2,tilt:-.8,duration:1000,fxSymbol:"✧",fxSide:"right"});later(1250,()=>attention(-1))});
+
+  later(17300,()=>{say("BYE BYE ♡");softPose("waveprep",{hop:1.5,tilt:-.4,duration:850});later(850,()=>softPose("wave",{hop:2.5,tilt:-.7,duration:900,fxSymbol:"♡",fxSide:"right"}));later(2150,()=>attention(1))});
+
+  later(21500,()=>{say("MAKE A HEART");softPose("heartprep",{hop:1.2,tilt:0,duration:850});later(850,()=>softPose("heart",{hop:6.5,tilt:0,duration:1000,fxSymbol:"♥",fxSide:"both"}));later(2300,()=>attention(-1))});
+
+  later(26100,()=>{say("DANCE MODE");dance();sideFx("♪",2,"left");later(3600,()=>sideFx("♪",2,"right"));later(7000,()=>sideFx("♪",2,"left"))});
+
+  later(35500,()=>{if(danceTimer){clearInterval(danceTimer);danceTimer=null}say("KISS ♥");softPose("kissprep",{hop:1.2,tilt:-.3,duration:850});later(850,()=>softPose("kiss",{hop:4,tilt:-.8,duration:1000,fxSymbol:"♥",fxSide:"left"}));later(2300,()=>attention(-1))});
+
+  later(39700,()=>{say("ASA");sub.textContent="TIKTOK MOTION DEMO";softPose("heart",{hop:7.5,tilt:0,duration:1050,fxSymbol:"♥",fxSide:"both"});later(1400,()=>attention(1))});
+  later(43300,()=>anim(stage,[{opacity:1},{opacity:0}],{duration:520,easing:"linear"}))
+}
+document.querySelector("#replay").addEventListener("click",run);run();
+</script>
+</body>
+</html>
