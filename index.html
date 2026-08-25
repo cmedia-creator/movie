@@ -1,65 +1,154 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CODE MOVIES</title>
-<style>
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#18141b;color:#f5eee6;font-family:"Yu Gothic","Hiragino Kaku Gothic ProN",system-ui,sans-serif}
-body{min-height:100vh;display:grid;place-items:center;padding:28px}
-main{width:min(760px,100%)}
-header{margin-bottom:30px}
-small{display:block;letter-spacing:.22em;opacity:.55;font-weight:800;margin-bottom:8px}
-h1{margin:0;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:clamp(34px,8vw,58px);line-height:1.15;letter-spacing:.04em}
-header p{margin:14px 0 0;line-height:1.8;opacity:.72}
-.grid{display:grid;gap:16px}
-a{display:block;color:inherit;text-decoration:none;border:1px solid rgba(255,255,255,.15);background:#231e27;padding:22px;border-radius:16px;transition:.2s}
-a:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.28)}
-a:active{transform:scale(.985)}
-.num{font:800 12px/1 ui-monospace,monospace;letter-spacing:.15em;opacity:.48}
-h2{margin:8px 0 6px;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:clamp(22px,5vw,31px)}
-.card p{margin:0;line-height:1.7;opacity:.68;font-size:14px}
-.arrow{margin-top:16px;font-weight:800;font-size:13px;letter-spacing:.08em}
-.motion{background:linear-gradient(135deg,#211e27,#16171d)}
-.motion .num{opacity:.7}
-footer{margin-top:24px;font-size:11px;opacity:.35;text-align:center;letter-spacing:.15em}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b0f" />
+  <title>CHIBI MOTION LAB</title>
+  <style>
+    :root{
+      --bg:#090a0f;
+      --panel:#12141c;
+      --panel2:#171a24;
+      --text:#f7f7fb;
+      --muted:#a8aabc;
+      --line:rgba(255,255,255,.08);
+      --accent:#ff4f8b;
+      --accent2:#b96cff;
+      --shadow:0 20px 70px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:
+      Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif}
+    body{
+      min-height:100svh;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255,79,139,.16), transparent 35%),
+        radial-gradient(circle at 90% 10%, rgba(185,108,255,.14), transparent 32%),
+        linear-gradient(180deg,#0a0b10 0%,#090a0f 100%);
+    }
+    a{color:inherit;text-decoration:none}
+    .wrap{width:min(1120px,92vw);margin:0 auto;padding:64px 0 72px}
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:7px 11px;border:1px solid var(--line);
+      border-radius:999px;color:#d9d9e4;background:rgba(255,255,255,.035);
+      font-size:12px;letter-spacing:.12em;text-transform:uppercase
+    }
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 18px var(--accent)}
+    h1{
+      margin:18px 0 10px;font-size:clamp(36px,7vw,76px);line-height:.95;
+      letter-spacing:-.055em;font-weight:900
+    }
+    .lead{
+      max-width:720px;margin:0;color:var(--muted);font-size:clamp(14px,2.5vw,18px);line-height:1.75
+    }
+    .grid{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:18px;margin-top:44px
+    }
+    .card{
+      position:relative;overflow:hidden;min-height:230px;padding:24px;
+      border:1px solid var(--line);border-radius:24px;
+      background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));
+      box-shadow:var(--shadow);
+      transition:transform .22s ease,border-color .22s ease,background .22s ease;
+      isolation:isolate
+    }
+    .card:hover{
+      transform:translateY(-4px);
+      border-color:rgba(255,255,255,.18);
+      background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.035))
+    }
+    .card::before{
+      content:"";position:absolute;inset:auto -55px -70px auto;width:210px;height:210px;border-radius:50%;
+      background:radial-gradient(circle,rgba(255,79,139,.24),transparent 66%);z-index:-1
+    }
+    .card.purple::before{background:radial-gradient(circle,rgba(185,108,255,.24),transparent 66%)}
+    .card.blue::before{background:radial-gradient(circle,rgba(75,150,255,.20),transparent 66%)}
+    .card.gold::before{background:radial-gradient(circle,rgba(255,188,75,.18),transparent 66%)}
+    .tag{
+      display:inline-block;padding:6px 9px;border-radius:9px;background:rgba(255,255,255,.07);
+      color:#d5d6df;font-size:11px;font-weight:700;letter-spacing:.08em
+    }
+    .card h2{margin:20px 0 7px;font-size:30px;letter-spacing:-.03em}
+    .card p{margin:0;color:var(--muted);line-height:1.65;font-size:14px;max-width:34rem}
+    .go{
+      position:absolute;right:22px;bottom:20px;width:42px;height:42px;border-radius:50%;
+      display:grid;place-items:center;background:#fff;color:#0b0b0f;font-size:20px;font-weight:900
+    }
+    .asa{
+      grid-column:1/-1;min-height:265px;
+      background:
+        linear-gradient(145deg,rgba(255,79,139,.13),rgba(255,255,255,.025)),
+        linear-gradient(180deg,var(--panel2),var(--panel));
+    }
+    .asa h2{font-size:clamp(34px,5vw,52px)}
+    .new{
+      color:white;background:linear-gradient(90deg,var(--accent),var(--accent2));
+      border:0
+    }
+    footer{
+      margin-top:28px;padding-top:20px;border-top:1px solid var(--line);
+      color:#7f8190;font-size:12px
+    }
+    @media (max-width:760px){
+      .wrap{padding:38px 0 54px}
+      .grid{grid-template-columns:1fr;gap:14px;margin-top:32px}
+      .asa{grid-column:auto}
+      .card{min-height:200px;padding:20px;border-radius:20px}
+      .asa{min-height:230px}
+      .card h2{font-size:27px}
+      .go{right:18px;bottom:18px}
+    }
+  </style>
 </head>
 <body>
-<main>
-<header>
-<small>CODE MOVIES</small>
-<h1>コードで描く、<br>短編映像。</h1>
-<p>HTML / CSS / JavaScriptだけで制作した短編作品とモーションデモ。</p>
-</header>
+  <main class="wrap">
+    <div class="eyebrow"><span class="dot"></span> CHIBI MOTION LAB</div>
+    <h1>Motion<br>Playground.</h1>
+    <p class="lead">
+      GitHub Pages上で動く、ちびキャラクターのモーション実験室。
+      各コンテンツは自動再生・操作デモとして個別ページに分けています。
+    </p>
 
-<section class="grid">
+    <section class="grid">
+      <a class="card asa" href="./asa-chibi-motion-demo/">
+        <span class="tag new">NEW / ASA</span>
+        <h2>ASA Motion Demo</h2>
+        <p>
+          笑顔、ウィンク、真剣な表情、色気のある表情、
+          バイバイ、両手ハート、ダンス、投げキッスをつないだ
+          30〜60秒の自動モーションデモ。
+        </p>
+        <span class="go" aria-hidden="true">↗</span>
+      </a>
 
-<a class="card" href="./life/">
-<div class="num">STORY 01</div>
-<h2>好きなものが、私をつくった。</h2>
-<p>ヒーロー、サッカー、シナリオ。そして、大切な人。人生で出会った「好き」を歩く60秒。</p>
-<div class="arrow">OPEN STORY →</div>
-</a>
+      <a class="card purple" href="./ruka-motion-pc/">
+        <span class="tag">RUKA</span>
+        <h2>RUKA Motion</h2>
+        <p>PC向けのちびキャラクターモーションデモ。</p>
+        <span class="go" aria-hidden="true">↗</span>
+      </a>
 
-<a class="card" href="./scenario/">
-<div class="num">STORY 02</div>
-<h2>物語は、素晴らしい。</h2>
-<p>憧れ、挫折、孤独、支えてくれた言葉。シナリオライターだった頃をレトロJRPG風に描く60秒。</p>
-<div class="arrow">OPEN STORY →</div>
-</a>
+      <a class="card blue" href="./life/">
+        <span class="tag">LIFE</span>
+        <h2>Life</h2>
+        <p>自動進行型の演出コンテンツ。</p>
+        <span class="go" aria-hidden="true">↗</span>
+      </a>
 
-<a class="card motion" href="./ruka-motion-pc/">
-<div class="num">MOTION 01</div>
-<h2>RUKA</h2>
-<p>キャラクターシートのモーション素材を使って制作した、20秒のブラウザアニメーション。</p>
-<div class="arrow">OPEN MOTION →</div>
-</a>
+      <a class="card gold" href="./scenario/">
+        <span class="tag">SCENARIO</span>
+        <h2>Scenario</h2>
+        <p>シナリオ演出・物語系コンテンツ。</p>
+        <span class="go" aria-hidden="true">↗</span>
+      </a>
+    </section>
 
-</section>
-
-<footer>CODE MOVIES</footer>
-</main>
+    <footer>
+      GitHub Pages / static HTML, CSS & JavaScript
+    </footer>
+  </main>
 </body>
 </html>
