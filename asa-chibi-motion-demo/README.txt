@@ -1,11 +1,13 @@
-ASA Motion Demo fixed
+ASA Motion Demo FINAL
 
-What changed
-- Removed sprite-atlas 방식 and switched to single clean PNG swaps.
-- Each asset is re-masked to keep only the main character, so stray hearts / notes / speech-bubble-like fragments are removed.
-- No more adjacent 2nd / 3rd ASA appearing when moving.
-- Dance section slowed down to reduce visual awkwardness.
+・30秒自動進行
+・笑顔専用全身素材
+・バイバイ / ハート / ダンス / 投げキッスを個別PNGフレーム化
+・スプライトシート表示を廃止し、横から別のASAが見える問題を解消
+・全フレーム再マスキング。ラベル、枠、余計な映り込みを除去
+・ダンスは約0.82秒/ポーズ、ボディスウェイは2.55秒周期に減速
+・ASA見出しと30 SECOND MOTIONはflex配置＋固定gapで重なり防止
+・装飾はキャラ左右のみに限定し、頭上に吹き出し状の要素を出さない
 
-How to use
-- Replace the contents of your existing `asa-chibi-motion-demo/` folder with the contents of this folder.
-- Root TOP `index.html` can stay as-is if it already links to `./asa-chibi-motion-demo/`.
+GitHubでは、現在の asa-chibi-motion-demo/ フォルダをこのフォルダで丸ごと差し替えてください。
+TOPのリンクが ./asa-chibi-motion-demo/ のままなら、TOP index.html の変更は不要です。

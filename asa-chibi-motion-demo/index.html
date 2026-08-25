@@ -3,268 +3,89 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#09090d">
+<meta name="theme-color" content="#08080c">
 <title>ASA Motion Demo</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#09090d;font-family:Arial,"Noto Sans JP",sans-serif}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08080c;font-family:Arial,"Noto Sans JP",sans-serif}
+body{display:grid;place-items:center}
 #stage{
-  position:relative;margin:auto;height:100svh;max-width:56.25svh;aspect-ratio:9/16;overflow:hidden;color:#fff;
-  background:
-    radial-gradient(circle at 50% 34%,#403840 0,#1e1820 42%,#08080b 82%);
+ position:relative;width:min(100vw,56.25svh);height:100svh;overflow:hidden;color:#fff;isolation:isolate;
+ background:radial-gradient(circle at 50% 37%,rgba(106,78,101,.38),rgba(41,30,42,.46) 30%,transparent 56%),linear-gradient(180deg,#151119,#0c0b10 53%,#07070a)
 }
-#stage:before{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(90deg,#ffffff07 1px,transparent 1px),linear-gradient(#ffffff07 1px,transparent 1px);
-  background-size:30px 30px;opacity:.7
+#stage:before{content:"";position:absolute;inset:0;z-index:0;opacity:.42;background:linear-gradient(90deg,#ffffff09 1px,transparent 1px),linear-gradient(#ffffff09 1px,transparent 1px);background-size:30px 30px}
+#stage:after{content:"";position:absolute;inset:0;z-index:9;pointer-events:none;background:radial-gradient(circle at 50% 54%,transparent 40%,#000a 100%)}
+#header{
+ position:absolute;z-index:12;top:max(5.8%,calc(env(safe-area-inset-top) + 18px));left:7%;
+ display:flex;flex-direction:column;align-items:flex-start;gap:22px;pointer-events:none
 }
-#stage:after{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(circle at 50% 55%,transparent 35%,#0008 100%);
-}
-#header{position:absolute;inset:0;z-index:12;pointer-events:none}
-#logo{
-  position:absolute;top:7%;left:7%;font-size:min(15vw,76px);font-weight:900;letter-spacing:-.07em;
-  opacity:0;transform:translateY(-10px);transition:.45s
-}
-#small{
-  position:absolute;top:17.2%;left:8%;font-size:min(2.85vw,14px);letter-spacing:.30em;
-  line-height:1.4;opacity:0;transition:.45s;white-space:nowrap
-}
-#actorWrap{
-  position:absolute;left:-45%;bottom:17.5%;width:205px;height:260px;z-index:5;
-  transform-origin:50% 92%;
-}
-#actor{
-  position:absolute;left:50%;bottom:0;transform:translateX(-50%);
-  width:100%;height:100%;object-fit:contain;object-position:center bottom;
-  filter:drop-shadow(0 15px 8px #0008);user-select:none;-webkit-user-drag:none
-}
-.floor{
-  position:absolute;left:6%;right:6%;bottom:17%;height:2px;background:#ffffff42;
-  box-shadow:0 0 24px #ffffff20
-}
-#caption{
-  position:absolute;left:5%;right:5%;bottom:8%;z-index:10;text-align:center;font-weight:900;
-  font-size:min(4vw,19px);letter-spacing:.13em;text-shadow:0 2px 8px #000
-}
-#fx{position:absolute;inset:0;z-index:8;pointer-events:none}
-.fx{position:absolute;font-size:min(9vw,44px);animation:float 1.55s ease-out forwards}
-@keyframes float{
-  0%{opacity:0;transform:translateY(18px) scale(.5)}25%{opacity:1}
-  100%{opacity:0;transform:translateY(-125px) scale(1.2) rotate(12deg)}
-}
-@keyframes bob{50%{transform:translateY(-5px)}}
-@keyframes runBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
-@keyframes seriousPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-@keyframes charmMove{0%,100%{transform:rotate(-2deg) translateY(0)}50%{transform:rotate(2deg) translateY(-4px)}}
-@keyframes heartPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-@keyframes waveMove{0%,100%{transform:rotate(0)}50%{transform:rotate(2deg) translateY(-3px)}}
-@keyframes danceMove{
-  0%,100%{transform:translateY(0) rotate(-2deg) translateX(0)}
-  20%{transform:translateY(-6px) rotate(-6deg) translateX(-8px)}
-  45%{transform:translateY(0) rotate(5deg) translateX(7px)}
-  70%{transform:translateY(-7px) rotate(-4deg) translateX(-5px)}
-}
-@keyframes finalHop{
-  0%,100%{transform:scale(1.12) translateY(0)}
-  45%{transform:scale(1.12) translateY(-18px)}
-  70%{transform:scale(1.14,.98) translateY(1px)}
-}
-@keyframes stageFade{to{opacity:0}}
-#replay{
-  position:absolute;top:4%;right:5%;z-index:20;border:1px solid #ffffff40;background:#0005;color:#fff;
-  padding:8px 12px;border-radius:999px;font-size:11px;letter-spacing:.08em;cursor:pointer
-}
-@media (max-width:600px){
-  #header{
-    top:max(6.2%,calc(env(safe-area-inset-top) + 18px));left:7%;right:7%;height:auto;
-    display:flex;flex-direction:column;align-items:flex-start;gap:9px
-  }
-  #logo{position:static;font-size:clamp(38px,14vw,58px);line-height:.88;white-space:nowrap}
-  #small{position:static;font-size:clamp(10px,2.9vw,13px);line-height:1.15;letter-spacing:.20em;max-width:100%}
-  #replay{top:max(2.2%,calc(env(safe-area-inset-top) + 8px));right:4%;padding:7px 10px;font-size:10px}
-  #actorWrap{width:190px;height:242px}
-}
+#logo{font-size:clamp(48px,14vw,74px);line-height:.82;font-weight:900;letter-spacing:-.075em;opacity:0;transform:translateY(-10px);transition:.4s;white-space:nowrap}
+#small{margin-left:3px;font-size:clamp(10px,2.7vw,13px);line-height:1.15;letter-spacing:.28em;color:#ffffffb8;opacity:0;transition:.4s;white-space:nowrap}
+#actorWrap{position:absolute;z-index:5;left:-46%;bottom:17.3%;height:31.2%;min-height:225px;max-height:285px;width:240px;transform-origin:50% 92%;will-change:left,transform}
+#actor{position:absolute;left:50%;bottom:0;height:100%;width:auto;max-width:none;transform:translateX(-50%);filter:drop-shadow(0 14px 8px #0009);user-select:none;-webkit-user-drag:none}
+.floor{position:absolute;z-index:2;left:8%;right:8%;bottom:16.8%;height:1px;background:linear-gradient(90deg,transparent,#ffffff6b,transparent);box-shadow:0 0 28px #ffffff24}
+#caption{position:absolute;z-index:12;left:7%;right:7%;bottom:max(7.6%,calc(env(safe-area-inset-bottom) + 22px));text-align:center;font-size:clamp(12px,3.6vw,18px);font-weight:900;letter-spacing:.14em;text-shadow:0 3px 12px #000}
+#fx{position:absolute;inset:0;z-index:7;pointer-events:none}
+.fx{position:absolute;font-size:clamp(16px,5vw,28px);opacity:0;animation:floatSide 1.6s ease-out forwards}
+@keyframes floatSide{0%{opacity:0;transform:translateY(14px) scale(.72)}24%{opacity:.88}100%{opacity:0;transform:translateY(-72px) scale(1.08) rotate(10deg)}}
+@keyframes enterBob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-6px) rotate(1.5deg)}}
+@keyframes idleBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes serious{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+@keyframes charm{0%,100%{transform:rotate(-1.7deg) translateY(0)}50%{transform:rotate(1.7deg) translateY(-4px)}}
+@keyframes waveBody{0%,100%{transform:rotate(-1deg) translateY(0)}50%{transform:rotate(1.6deg) translateY(-3px)}}
+@keyframes heartBody{0%,100%{transform:scale(1)}50%{transform:scale(1.035) translateY(-3px)}}
+@keyframes danceBody{0%,100%{transform:translateX(0) translateY(0) rotate(-2deg)}25%{transform:translateX(-7px) translateY(-5px) rotate(-4deg)}50%{transform:translateX(6px) translateY(0) rotate(3deg)}75%{transform:translateX(-3px) translateY(-6px) rotate(-2deg)}}
+@keyframes finalHop{0%,100%{transform:scale(1.1) translateY(0)}48%{transform:scale(1.1) translateY(-18px)}72%{transform:scale(1.12,.98) translateY(1px)}}
+@keyframes fadeStage{to{opacity:0}}
+#replay{position:absolute;z-index:20;top:max(3.2%,calc(env(safe-area-inset-top) + 8px));right:4%;border:1px solid #ffffff3d;background:#0006;color:#fff;padding:7px 10px;border-radius:999px;font-size:10px;letter-spacing:.08em;cursor:pointer;backdrop-filter:blur(5px)}
+@media(max-width:430px){#header{gap:20px;left:7.5%}#logo{font-size:clamp(46px,14vw,58px)}#small{letter-spacing:.22em}#actorWrap{height:29.5%;min-height:210px}}
 </style>
 </head>
 <body>
 <main id="stage">
-  <div id="header"><div id="logo">ASA</div><div id="small">30 SECOND MOTION</div></div>
-  <div id="actorWrap"><img id="actor" alt="ASA"></div>
-  <div id="fx"></div><div class="floor"></div>
-  <div id="caption">READY...</div>
-  <button id="replay">↻ REPLAY</button>
+ <div id="header"><div id="logo">ASA</div><div id="small">30 SECOND MOTION</div></div>
+ <div id="actorWrap"><img id="actor" src="assets/idle.png" alt="ASA"></div>
+ <div id="fx"></div><div class="floor"></div>
+ <div id="caption">READY...</div>
+ <button id="replay" type="button">↻ REPLAY</button>
 </main>
-
 <script>
-const wrap=document.querySelector("#actorWrap"),
-      actor=document.querySelector("#actor"),
-      cap=document.querySelector("#caption"),
-      logo=document.querySelector("#logo"),
-      small=document.querySelector("#small"),
-      fx=document.querySelector("#fx"),
-      stage=document.querySelector("#stage");
-
-const IMG = {
-  idle: "assets/idle.png",
-  serious: "assets/serious.png",
-  charm: "assets/charm.png",
-  wave: "assets/wave.png",
-  heart: "assets/heart.png",
-  dance: "assets/dance.png",
-  kiss: "assets/kiss.png",
+const stage=document.querySelector("#stage"),wrap=document.querySelector("#actorWrap"),actor=document.querySelector("#actor"),caption=document.querySelector("#caption"),logo=document.querySelector("#logo"),small=document.querySelector("#small"),fx=document.querySelector("#fx");
+const IMG={
+ idle:"assets/idle.png",smile:"assets/smile.png",charm:"assets/charm.png",
+ wave0:"assets/wave-0.png",wave1:"assets/wave-1.png",wave2:"assets/wave-2.png",
+ heart0:"assets/heart-0.png",heart1:"assets/heart-1.png",heart2:"assets/heart-2.png",
+ kiss0:"assets/kiss-0.png",kiss1:"assets/kiss-1.png",kiss2:"assets/kiss-2.png",kiss3:"assets/kiss-3.png",kiss4:"assets/kiss-4.png",
+ dance0:"assets/dance-0.png",dance1:"assets/dance-1.png",dance2:"assets/dance-2.png",dance3:"assets/dance-3.png",dance4:"assets/dance-4.png",dance5:"assets/dance-5.png",dance6:"assets/dance-6.png",dance7:"assets/dance-7.png",dance8:"assets/dance-8.png"
 };
-
-let timers = [];
-function later(ms, fn){ timers.push(setTimeout(fn, ms)); }
-function clearAll(){ timers.forEach(clearTimeout); timers=[]; }
-function show(name){ actor.src = IMG[name]; }
-function say(text){ cap.textContent = text; }
-function burst(symbol, n=6, leftMin=38, leftMax=72){
-  for(let i=0;i<n;i++) later(i*130, ()=>{
-    const e=document.createElement("span");
-    e.className="fx";
-    e.textContent=symbol;
-    e.style.left=(leftMin + Math.random()*(leftMax-leftMin)) + "%";
-    e.style.top=(35 + Math.random()*25) + "%";
-    fx.appendChild(e);
-    setTimeout(()=>e.remove(), 1600);
-  });
-}
-function setMotion(cssAnimation){
-  wrap.style.animation = cssAnimation || "";
-  actor.style.animation = "";
-}
-function setTransform(t){
-  wrap.style.transform = t || "";
-}
-function reset(){
-  clearAll();
-  fx.innerHTML = "";
-  wrap.style.transition = "none";
-  wrap.style.left = "-45%";
-  wrap.style.bottom = "17.5%";
-  wrap.style.transform = "";
-  wrap.style.animation = "";
-  actor.style.animation = "";
-  actor.style.transform = "translateX(-50%)";
-  stage.style.animation = "";
-  stage.style.opacity = "1";
-  logo.style.opacity = 0;
-  logo.style.transform = "translateY(-10px)";
-  small.style.opacity = 0;
-  small.textContent = "30 SECOND MOTION";
-  say("READY...");
-  show("idle");
-}
-
+Object.values(IMG).forEach(src=>{const i=new Image();i.src=src});
+let timers=[],seqTimer=null;
+function later(ms,fn){timers.push(setTimeout(fn,ms))}
+function stopSequence(){if(seqTimer){clearInterval(seqTimer);seqTimer=null}}
+function clearAll(){stopSequence();timers.forEach(clearTimeout);timers=[]}
+function say(t){caption.textContent=t}
+function show(n){actor.src=IMG[n]}
+function motion(a){wrap.style.animation=a||""}
+function sequence(names,every,loop=true){stopSequence();let i=0;show(names[0]);if(names.length<2)return;seqTimer=setInterval(()=>{i++;if(i>=names.length){if(loop)i=0;else{stopSequence();return}}show(names[i])},every)}
+function burst(symbol,count=4,side="right"){for(let i=0;i<count;i++)later(i*150,()=>{const e=document.createElement("span");e.className="fx";e.textContent=symbol;const left=side==="left"||(side==="both"&&i%2===0);e.style.left=left?(8+Math.random()*10)+"%":(82+Math.random()*9)+"%";e.style.top=(47+Math.random()*22)+"%";fx.appendChild(e);setTimeout(()=>e.remove(),1700)})}
+function reset(){clearAll();fx.innerHTML="";stage.style.animation="";stage.style.opacity="1";wrap.style.transition="none";wrap.style.left="-46%";wrap.style.transform="";wrap.style.animation="";show("idle");logo.style.opacity="0";logo.style.transform="translateY(-10px)";small.style.opacity="0";small.textContent="30 SECOND MOTION";say("READY...")}
 function run(){
-  reset();
-
-  // 0 - 2.2s enter
-  show("idle");
-  say("ASA COMES IN");
-  setMotion("runBob .42s ease-in-out infinite");
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    wrap.style.transition = "left 2.1s linear";
-    wrap.style.left = "29%";
-  }));
-
-  // 2.2 - 4.2 settle
-  later(2200, ()=>{
-    show("idle");
-    setMotion("bob 1s ease-in-out infinite");
-    say("HELLO, ASA.");
-    logo.style.opacity = 1;
-    logo.style.transform = "translateY(0)";
-    small.style.opacity = 1;
-  });
-
-  // 4.2 - 6.4 smile
-  later(4200, ()=>{
-    show("wave");
-    setMotion("bob .9s ease-in-out infinite");
-    say("SMILE");
-    burst("✦", 4, 48, 66);
-  });
-
-  // 6.4 - 8.4 wink
-  later(6400, ()=>{
-    show("kiss");
-    setMotion("bob .9s ease-in-out infinite");
-    say("WINK!");
-    burst("♡", 4, 32, 55);
-  });
-
-  // 8.4 - 10.7 serious
-  later(8400, ()=>{
-    show("serious");
-    setMotion("seriousPulse 1.15s ease-in-out infinite");
-    say("SERIOUS MODE");
-  });
-
-  // 10.7 - 12.9 charm
-  later(10700, ()=>{
-    show("charm");
-    setMotion("charmMove 1.0s ease-in-out infinite");
-    say("COOL & CHARM");
-    burst("✧", 4, 49, 69);
-  });
-
-  // 12.9 - 16.5 wave
-  later(12900, ()=>{
-    show("wave");
-    setMotion("waveMove .9s ease-in-out infinite");
-    say("BYE BYE ♡");
-    burst("♡", 5, 53, 78);
-  });
-
-  // 16.5 - 20.0 heart
-  later(16500, ()=>{
-    show("heart");
-    setMotion("heartPulse .95s ease-in-out infinite");
-    say("MAKE A HEART");
-    burst("♥", 8, 43, 64);
-  });
-
-  // 20.0 - 25.7 dance (slower)
-  later(20000, ()=>{
-    show("dance");
-    setMotion("danceMove 1.25s ease-in-out infinite");
-    say("DANCE MODE");
-    burst("♪", 7, 36, 76);
-  });
-
-  // 25.7 - 28.7 kiss
-  later(25700, ()=>{
-    show("kiss");
-    setMotion("bob .85s ease-in-out infinite");
-    say("KISS ♥");
-    burst("♥", 7, 26, 58);
-  });
-
-  // 28.7 - 30.0 final
-  later(28700, ()=>{
-    show("heart");
-    setMotion("");
-    wrap.style.transition = "transform .35s ease";
-    wrap.style.transform = "scale(1.12)";
-    say("ASA");
-    small.textContent = "SEE YOU NEXT TIME";
-    burst("♥", 5, 46, 65);
-  });
-  later(29200, ()=>{
-    wrap.style.transition = "none";
-    wrap.style.animation = "finalHop .68s ease-in-out";
-  });
-  later(29850, ()=>{
-    stage.style.animation = "stageFade .35s linear forwards";
-  });
+ reset();
+ say("ASA COMES IN");motion("enterBob .45s ease-in-out infinite");
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{wrap.style.transition="left 1.75s linear";wrap.style.left="29%"}));
+ later(1800,()=>{show("idle");motion("idleBob 1.2s ease-in-out infinite");say("HELLO, ASA.");logo.style.opacity="1";logo.style.transform="translateY(0)";small.style.opacity="1"});
+ later(3500,()=>{show("smile");motion("idleBob 1.05s ease-in-out infinite");say("SMILE");burst("✦",3,"right")});
+ later(5400,()=>{sequence(["kiss1","kiss2","kiss2"],650,false);motion("idleBob 1s ease-in-out infinite");say("WINK!")});
+ later(7300,()=>{stopSequence();show("idle");motion("serious 1.3s ease-in-out infinite");say("SERIOUS MODE")});
+ later(9300,()=>{show("charm");motion("charm 1.15s ease-in-out infinite");say("COOL & CHARM");burst("✧",3,"left")});
+ later(11300,()=>{sequence(["wave0","wave1","wave2","wave1"],720,true);motion("waveBody 1.45s ease-in-out infinite");say("BYE BYE ♡")});
+ later(14400,()=>{sequence(["heart0","heart1","heart2","heart1"],760,true);motion("heartBody 1.5s ease-in-out infinite");say("MAKE A HEART");burst("♥",4,"both")});
+ later(17500,()=>{sequence(["dance0","dance1","dance2","dance3","dance4","dance5","dance6","dance7","dance8"],820,true);motion("danceBody 2.55s ease-in-out infinite");say("DANCE MODE");burst("♪",3,"left");later(3000,()=>burst("♪",3,"right"))});
+ later(24700,()=>{sequence(["kiss0","kiss1","kiss2","kiss3","kiss4"],540,false);motion("idleBob 1s ease-in-out infinite");say("KISS ♥");burst("♥",4,"left")});
+ later(27500,()=>{stopSequence();show("heart2");say("ASA");small.textContent="SEE YOU NEXT TIME";motion("finalHop .72s ease-in-out");burst("♥",3,"both")});
+ later(29500,()=>{stopSequence();stage.style.animation="fadeStage .5s linear forwards"});
 }
-
-document.querySelector("#replay").addEventListener("click", run);
-run();
+document.querySelector("#replay").addEventListener("click",run);run();
 </script>
 </body>
 </html>
