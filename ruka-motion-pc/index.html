@@ -14,7 +14,7 @@ linear-gradient(90deg,#ffffff09 1px,transparent 1px),linear-gradient(#ffffff09 1
 background-size:30px 30px;opacity:.7}
 #logo{position:absolute;top:7%;left:7%;font-size:min(15vw,76px);font-weight:900;letter-spacing:-.07em;opacity:0;
 transform:translateY(-10px);transition:.45s}
-#small{position:absolute;top:15.5%;left:8%;font-size:min(3vw,15px);letter-spacing:.28em;opacity:0;transition:.45s}
+#small{position:absolute;top:17.2%;left:8%;font-size:min(2.85vw,14px);letter-spacing:.30em;line-height:1.4;opacity:0;transition:.45s}
 #actor{position:absolute;width:180px;height:210px;left:-45%;bottom:17.5%;z-index:5;
 background-image:url("assets/ruka-sprites.png");background-repeat:no-repeat;
 background-size:4140px 210px;
@@ -31,6 +31,8 @@ font-size:min(4vw,19px);letter-spacing:.13em;text-shadow:0 2px 8px #000}
 @keyframes hop{45%{transform:translateY(-90px)}70%{transform:translateY(4px) scale(1.04,.96)}}
 @keyframes danceMove{20%{transform:rotate(-6deg) translateY(-6px)}40%{transform:rotate(6deg)}
 60%{transform:rotate(-5deg) translateY(-7px)}80%{transform:rotate(6deg)}}
+@keyframes finalHop{0%,100%{transform:scale(1.14) translateY(0)}45%{transform:scale(1.14) translateY(-22px)}70%{transform:scale(1.16,.98) translateY(2px)}}
+@keyframes stageFade{to{opacity:0}}
 #replay{position:absolute;top:4%;right:5%;z-index:20;border:1px solid #ffffff40;background:#0005;color:#fff;
 padding:8px 12px;border-radius:999px;font-size:11px;letter-spacing:.08em}
 </style>
@@ -70,7 +72,8 @@ function burst(symbol,n=6){
 function resetActor(){
  stopLoop(); timers.forEach(clearTimeout); timers=[]; fx.innerHTML="";
  a.style.transition="none";a.style.left="-45%";a.style.bottom="17.5%";a.style.transform="";
- a.style.animation="";logo.style.opacity=0;logo.style.transform="translateY(-10px)";
+ a.style.animation="";document.querySelector("#stage").style.animation="";document.querySelector("#stage").style.opacity="1";
+ logo.style.opacity=0;logo.style.transform="translateY(-10px)";
  small.style.opacity=0;small.textContent="20 SECOND MOTION";say("READY...");pose(RUN[0]);
 }
 function run(){
@@ -102,15 +105,22 @@ function run(){
  // 12-16s: dance pose + body rhythm + notes
  later(12000,()=>{pose(DANCE);a.style.animation="danceMove .6s ease-in-out infinite";say("DANCE MODE");burst("♪",10);});
 
- // 16-17.5s: sit
- later(16000,()=>{a.style.animation="";pose(SIT);say("BREAK TIME");});
+ // 16-17s: item discovery. No long break; keep the ending moving.
+ later(15800,()=>{a.style.animation="";pose(ITEM);say("FOUND SOMETHING!");});
 
- // 17.5-20s: item pose -> heart final, zoom
- later(17400,()=>{pose(ITEM);say("FOUND SOMETHING!");});
- later(18500,()=>{pose(HEART);say("RUKA");small.textContent="SEE YOU NEXT TIME";burst("♥",4);
-   a.style.transition="transform 1.2s ease";a.style.transform="scale(1.2)";
+ // 17-18s: heart reveal + name
+ later(17000,()=>{pose(HEART);say("RUKA");burst("♥",5);
+   a.style.transition="transform .7s ease";a.style.transform="scale(1.14)";
  });
- later(19900,()=>stopLoop());
+
+ // 18-19s: goodbye title appears separately so the header never feels stacked
+ later(18000,()=>{small.textContent="SEE YOU NEXT TIME";});
+
+ // 19-19.65s: one small cute hop instead of holding on a static frame
+ later(19000,()=>{a.style.transition="none";a.style.animation="finalHop .62s ease-in-out";});
+
+ // 19.65-20s: clean fade to black
+ later(19650,()=>{stopLoop();document.querySelector("#stage").style.animation="stageFade .35s linear forwards";});
 }
 document.querySelector("#replay").addEventListener("click",run);
 run();
