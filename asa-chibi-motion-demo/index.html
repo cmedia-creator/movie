@@ -11,16 +11,16 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#09090d;fon
 #stage{
   position:relative;margin:auto;height:100svh;max-width:56.25svh;aspect-ratio:9/16;overflow:hidden;color:#fff;
   background:
-    radial-gradient(circle at 50% 34%,#3a343a 0,#1b171d 42%,#08080b 82%);
+    radial-gradient(circle at 50% 34%,#403840 0,#1e1820 42%,#08080b 82%);
 }
 #stage:before{
   content:"";position:absolute;inset:0;
-  background:linear-gradient(90deg,#ffffff09 1px,transparent 1px),linear-gradient(#ffffff09 1px,transparent 1px);
+  background:linear-gradient(90deg,#ffffff07 1px,transparent 1px),linear-gradient(#ffffff07 1px,transparent 1px);
   background-size:30px 30px;opacity:.7
 }
 #stage:after{
   content:"";position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(circle at 50% 55%,transparent 35%,#0007 100%);
+  background:radial-gradient(circle at 50% 55%,transparent 35%,#0008 100%);
 }
 #header{position:absolute;inset:0;z-index:12;pointer-events:none}
 #logo{
@@ -31,12 +31,14 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#09090d;fon
   position:absolute;top:17.2%;left:8%;font-size:min(2.85vw,14px);letter-spacing:.30em;
   line-height:1.4;opacity:0;transition:.45s;white-space:nowrap
 }
+#actorWrap{
+  position:absolute;left:-45%;bottom:17.5%;width:205px;height:260px;z-index:5;
+  transform-origin:50% 92%;
+}
 #actor{
-  position:absolute;width:180px;height:210px;left:-45%;bottom:17.5%;z-index:5;
-  background-image:url("assets/asa-sprites.png");background-repeat:no-repeat;
-  background-size:5400px 210px;
-  filter:drop-shadow(0 15px 8px #0008);transform-origin:50% 92%;
-  image-rendering:auto
+  position:absolute;left:50%;bottom:0;transform:translateX(-50%);
+  width:100%;height:100%;object-fit:contain;object-position:center bottom;
+  filter:drop-shadow(0 15px 8px #0008);user-select:none;-webkit-user-drag:none
 }
 .floor{
   position:absolute;left:6%;right:6%;bottom:17%;height:2px;background:#ffffff42;
@@ -47,23 +49,27 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#09090d;fon
   font-size:min(4vw,19px);letter-spacing:.13em;text-shadow:0 2px 8px #000
 }
 #fx{position:absolute;inset:0;z-index:8;pointer-events:none}
-.fx{position:absolute;font-size:min(9vw,44px);animation:float 1.45s ease-out forwards}
+.fx{position:absolute;font-size:min(9vw,44px);animation:float 1.55s ease-out forwards}
 @keyframes float{
   0%{opacity:0;transform:translateY(18px) scale(.5)}25%{opacity:1}
   100%{opacity:0;transform:translateY(-125px) scale(1.2) rotate(12deg)}
 }
 @keyframes bob{50%{transform:translateY(-5px)}}
-@keyframes runBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
-@keyframes serious{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
-@keyframes charm{0%,100%{transform:rotate(-2deg) translateY(0)}50%{transform:rotate(2deg) translateY(-5px)}}
-@keyframes heartPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes runBob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+@keyframes seriousPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+@keyframes charmMove{0%,100%{transform:rotate(-2deg) translateY(0)}50%{transform:rotate(2deg) translateY(-4px)}}
+@keyframes heartPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes waveMove{0%,100%{transform:rotate(0)}50%{transform:rotate(2deg) translateY(-3px)}}
 @keyframes danceMove{
-  20%{transform:rotate(-6deg) translateY(-6px)}40%{transform:rotate(6deg)}
-  60%{transform:rotate(-5deg) translateY(-7px)}80%{transform:rotate(6deg)}
+  0%,100%{transform:translateY(0) rotate(-2deg) translateX(0)}
+  20%{transform:translateY(-6px) rotate(-6deg) translateX(-8px)}
+  45%{transform:translateY(0) rotate(5deg) translateX(7px)}
+  70%{transform:translateY(-7px) rotate(-4deg) translateX(-5px)}
 }
 @keyframes finalHop{
-  0%,100%{transform:scale(1.14) translateY(0)}45%{transform:scale(1.14) translateY(-22px)}
-  70%{transform:scale(1.16,.98) translateY(2px)}
+  0%,100%{transform:scale(1.12) translateY(0)}
+  45%{transform:scale(1.12) translateY(-18px)}
+  70%{transform:scale(1.14,.98) translateY(1px)}
 }
 @keyframes stageFade{to{opacity:0}}
 #replay{
@@ -78,141 +84,186 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#09090d;fon
   #logo{position:static;font-size:clamp(38px,14vw,58px);line-height:.88;white-space:nowrap}
   #small{position:static;font-size:clamp(10px,2.9vw,13px);line-height:1.15;letter-spacing:.20em;max-width:100%}
   #replay{top:max(2.2%,calc(env(safe-area-inset-top) + 8px));right:4%;padding:7px 10px;font-size:10px}
+  #actorWrap{width:190px;height:242px}
 }
 </style>
 </head>
 <body>
 <main id="stage">
   <div id="header"><div id="logo">ASA</div><div id="small">30 SECOND MOTION</div></div>
-  <div id="actor" aria-label="ASA"></div>
+  <div id="actorWrap"><img id="actor" alt="ASA"></div>
   <div id="fx"></div><div class="floor"></div>
   <div id="caption">READY...</div>
   <button id="replay">↻ REPLAY</button>
 </main>
 
 <script>
-const a=document.querySelector("#actor"),
+const wrap=document.querySelector("#actorWrap"),
+      actor=document.querySelector("#actor"),
       cap=document.querySelector("#caption"),
       logo=document.querySelector("#logo"),
       small=document.querySelector("#small"),
       fx=document.querySelector("#fx"),
       stage=document.querySelector("#stage");
 
-const FW=180;
-const IDLE=[0, 1, 2, 3];
-const WAVE=[4, 5, 6, 7, 8, 9];
-const HEART=[10, 11, 12, 13, 14];
-const DANCE=[15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-const KISS=[25, 26, 27, 28, 29];
+const IMG = {
+  idle: "assets/idle.png",
+  serious: "assets/serious.png",
+  charm: "assets/charm.png",
+  wave: "assets/wave.png",
+  heart: "assets/heart.png",
+  dance: "assets/dance.png",
+  kiss: "assets/kiss.png",
+};
 
-let timers=[],loopTimer=null;
-function frame(i){a.style.backgroundPosition=`-${i*FW}px 0px`;}
-function stopLoop(){if(loopTimer)clearInterval(loopTimer);loopTimer=null;}
-function loop(seq,fps=7){
-  stopLoop();let j=0;frame(seq[0]);
-  loopTimer=setInterval(()=>{j=(j+1)%seq.length;frame(seq[j]);},1000/fps);
-}
-function pose(i){stopLoop();frame(i);}
-function later(ms,fn){timers.push(setTimeout(fn,ms));}
-function say(s){cap.textContent=s;}
-function burst(symbol,n=6,leftMin=38,leftMax=72){
-  for(let i=0;i<n;i++)later(i*90,()=>{
-    const e=document.createElement("span");e.className="fx";e.textContent=symbol;
-    e.style.left=(leftMin+Math.random()*(leftMax-leftMin))+"%";
-    e.style.top=(35+Math.random()*25)+"%";
-    fx.appendChild(e);setTimeout(()=>e.remove(),1500);
+let timers = [];
+function later(ms, fn){ timers.push(setTimeout(fn, ms)); }
+function clearAll(){ timers.forEach(clearTimeout); timers=[]; }
+function show(name){ actor.src = IMG[name]; }
+function say(text){ cap.textContent = text; }
+function burst(symbol, n=6, leftMin=38, leftMax=72){
+  for(let i=0;i<n;i++) later(i*130, ()=>{
+    const e=document.createElement("span");
+    e.className="fx";
+    e.textContent=symbol;
+    e.style.left=(leftMin + Math.random()*(leftMax-leftMin)) + "%";
+    e.style.top=(35 + Math.random()*25) + "%";
+    fx.appendChild(e);
+    setTimeout(()=>e.remove(), 1600);
   });
 }
-function reset(){
-  stopLoop();timers.forEach(clearTimeout);timers=[];fx.innerHTML="";
-  a.style.transition="none";a.style.left="-45%";a.style.bottom="17.5%";
-  a.style.transform="";a.style.animation="";
-  stage.style.animation="";stage.style.opacity="1";
-  logo.style.opacity=0;logo.style.transform="translateY(-10px)";
-  small.style.opacity=0;small.textContent="30 SECOND MOTION";
-  say("READY...");pose(IDLE[0]);
+function setMotion(cssAnimation){
+  wrap.style.animation = cssAnimation || "";
+  actor.style.animation = "";
 }
+function setTransform(t){
+  wrap.style.transform = t || "";
+}
+function reset(){
+  clearAll();
+  fx.innerHTML = "";
+  wrap.style.transition = "none";
+  wrap.style.left = "-45%";
+  wrap.style.bottom = "17.5%";
+  wrap.style.transform = "";
+  wrap.style.animation = "";
+  actor.style.animation = "";
+  actor.style.transform = "translateX(-50%)";
+  stage.style.animation = "";
+  stage.style.opacity = "1";
+  logo.style.opacity = 0;
+  logo.style.transform = "translateY(-10px)";
+  small.style.opacity = 0;
+  small.textContent = "30 SECOND MOTION";
+  say("READY...");
+  show("idle");
+}
+
 function run(){
   reset();
 
-  // 0-2.2s: enter immediately, just like RUKA
-  loop(IDLE,8);say("ASA COMES IN");
-  a.style.animation="runBob .34s ease-in-out infinite";
+  // 0 - 2.2s enter
+  show("idle");
+  say("ASA COMES IN");
+  setMotion("runBob .42s ease-in-out infinite");
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    a.style.transition="left 2.05s linear";a.style.left="29%";
+    wrap.style.transition = "left 2.1s linear";
+    wrap.style.left = "29%";
   }));
 
-  // 2.2-4.2s: settle
-  later(2100,()=>{
-    a.style.animation="bob 1s ease-in-out infinite";
-    loop(IDLE,4);say("HELLO, ASA.");
-    logo.style.opacity=1;logo.style.transform="translateY(0)";small.style.opacity=1;
+  // 2.2 - 4.2 settle
+  later(2200, ()=>{
+    show("idle");
+    setMotion("bob 1s ease-in-out infinite");
+    say("HELLO, ASA.");
+    logo.style.opacity = 1;
+    logo.style.transform = "translateY(0)";
+    small.style.opacity = 1;
   });
 
-  // 4.2-6.3s: smile
-  later(4200,()=>{
-    a.style.animation="bob .8s ease-in-out infinite";
-    pose(DANCE[6]);say("SMILE");
-    burst("✦",5);
+  // 4.2 - 6.4 smile
+  later(4200, ()=>{
+    show("wave");
+    setMotion("bob .9s ease-in-out infinite");
+    say("SMILE");
+    burst("✦", 4, 48, 66);
   });
 
-  // 6.3-8.3s: wink
-  later(6300,()=>{
-    pose(HEART[4]);a.style.animation="bob .75s ease-in-out infinite";say("WINK!");
-    burst("♡",4);
+  // 6.4 - 8.4 wink
+  later(6400, ()=>{
+    show("kiss");
+    setMotion("bob .9s ease-in-out infinite");
+    say("WINK!");
+    burst("♡", 4, 32, 55);
   });
 
-  // 8.3-10.5s: serious
-  later(8300,()=>{
-    pose(IDLE[2]);a.style.animation="serious 1s ease-in-out infinite";say("SERIOUS MODE");
+  // 8.4 - 10.7 serious
+  later(8400, ()=>{
+    show("serious");
+    setMotion("seriousPulse 1.15s ease-in-out infinite");
+    say("SERIOUS MODE");
   });
 
-  // 10.5-12.5s: charm
-  later(10500,()=>{
-    pose(KISS[0]);a.style.animation="charm .8s ease-in-out infinite";say("COOL & CHARM");
-    burst("✧",5);
+  // 10.7 - 12.9 charm
+  later(10700, ()=>{
+    show("charm");
+    setMotion("charmMove 1.0s ease-in-out infinite");
+    say("COOL & CHARM");
+    burst("✧", 4, 49, 69);
   });
 
-  // 12.5-16.5s: wave loop
-  later(12500,()=>{
-    a.style.animation="bob .65s ease-in-out infinite";loop(WAVE,8);say("BYE BYE ♡");
-    burst("♡",5,50,78);
+  // 12.9 - 16.5 wave
+  later(12900, ()=>{
+    show("wave");
+    setMotion("waveMove .9s ease-in-out infinite");
+    say("BYE BYE ♡");
+    burst("♡", 5, 53, 78);
   });
 
-  // 16.5-20s: heart motion
-  later(16500,()=>{
-    a.style.animation="heartPulse .7s ease-in-out infinite";loop(HEART,6);say("MAKE A HEART");
-    burst("♥",9);
+  // 16.5 - 20.0 heart
+  later(16500, ()=>{
+    show("heart");
+    setMotion("heartPulse .95s ease-in-out infinite");
+    say("MAKE A HEART");
+    burst("♥", 8, 43, 64);
   });
 
-  // 20-25.5s: dance
-  later(20000,()=>{
-    a.style.animation="danceMove .55s ease-in-out infinite";loop(DANCE,9);say("DANCE MODE");
-    burst("♪",12);
+  // 20.0 - 25.7 dance (slower)
+  later(20000, ()=>{
+    show("dance");
+    setMotion("danceMove 1.25s ease-in-out infinite");
+    say("DANCE MODE");
+    burst("♪", 7, 36, 76);
   });
 
-  // 25.5-28.6s: kiss
-  later(25500,()=>{
-    a.style.animation="bob .55s ease-in-out infinite";loop(KISS,6);say("KISS ♥");
-    burst("♥",8,27,66);
+  // 25.7 - 28.7 kiss
+  later(25700, ()=>{
+    show("kiss");
+    setMotion("bob .85s ease-in-out infinite");
+    say("KISS ♥");
+    burst("♥", 7, 26, 58);
   });
 
-  // 28.6-29.55s: final pose
-  later(28600,()=>{
-    pose(HEART[4]);say("ASA");small.textContent="SEE YOU NEXT TIME";
-    burst("♥",5);a.style.transition="transform .35s ease";a.style.transform="scale(1.14)";
+  // 28.7 - 30.0 final
+  later(28700, ()=>{
+    show("heart");
+    setMotion("");
+    wrap.style.transition = "transform .35s ease";
+    wrap.style.transform = "scale(1.12)";
+    say("ASA");
+    small.textContent = "SEE YOU NEXT TIME";
+    burst("♥", 5, 46, 65);
   });
-  later(29150,()=>{
-    a.style.transition="none";a.style.animation="finalHop .6s ease-in-out";
+  later(29200, ()=>{
+    wrap.style.transition = "none";
+    wrap.style.animation = "finalHop .68s ease-in-out";
   });
-
-  // 29.65-30s: clean fade
-  later(29650,()=>{
-    stopLoop();stage.style.animation="stageFade .35s linear forwards";
+  later(29850, ()=>{
+    stage.style.animation = "stageFade .35s linear forwards";
   });
 }
 
-document.querySelector("#replay").addEventListener("click",run);
+document.querySelector("#replay").addEventListener("click", run);
 run();
 </script>
 </body>

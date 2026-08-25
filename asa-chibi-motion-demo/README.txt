@@ -1,13 +1,11 @@
-ASA Motion Demo - RUKA style rebuild
+ASA Motion Demo fixed
 
-GitHub Pages:
-- Replace the existing `asa-chibi-motion-demo/` folder with this folder's contents.
-- Root TOP index does not need to change if it already links to `./asa-chibi-motion-demo/`.
+What changed
+- Removed sprite-atlas 방식 and switched to single clean PNG swaps.
+- Each asset is re-masked to keep only the main character, so stray hearts / notes / speech-bubble-like fragments are removed.
+- No more adjacent 2nd / 3rd ASA appearing when moving.
+- Dance section slowed down to reduce visual awkwardness.
 
-Concept:
-- 9:16 fixed stage
-- One small full-body chibi remains on stage
-- Sprite-frame swaps + CSS movement, not slideshow-style closeups
-- ~30 second automatic sequence
-- Smile / wink / serious / charm / wave / heart / dance / kiss
-- Transparent sprite sheet: assets/asa-sprites.png
+How to use
+- Replace the contents of your existing `asa-chibi-motion-demo/` folder with the contents of this folder.
+- Root TOP `index.html` can stay as-is if it already links to `./asa-chibi-motion-demo/`.
