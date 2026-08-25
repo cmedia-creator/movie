@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0e">
+<title>ASA Motion Demo</title>
+<style>
+*{box-sizing:border-box}
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden;
+  background:#08080c;font-family:Arial,"Noto Sans JP",sans-serif;
+}
+body{display:grid;place-items:center}
+#stage{
+  position:relative;
+  width:min(100vw,56.25svh);
+  height:100svh;
+  overflow:hidden;
+  color:#fff;
+  background:
+    radial-gradient(circle at 50% 36%, rgba(110,84,110,.34), transparent 38%),
+    linear-gradient(180deg,#17121b 0%,#0f0c12 52%,#08080c 100%);
+}
+#stage::before{
+  content:"";position:absolute;inset:0;opacity:.36;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px),
+    linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:30px 30px;
+}
+#stage::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 55%, transparent 40%, rgba(0,0,0,.62) 100%);
+}
+#header{
+  position:absolute;z-index:10;
+  top:max(5.7%, calc(env(safe-area-inset-top) + 16px));
+  left:7%;
+  display:flex;flex-direction:column;align-items:flex-start;gap:24px;
+  pointer-events:none;
+}
+#logo{
+  font-size:clamp(48px,14vw,72px);
+  font-weight:900;line-height:.82;letter-spacing:-.08em;
+  opacity:0;transform:translateY(-10px);transition:.4s;
+}
+#sub{
+  margin-left:2px;
+  font-size:clamp(10px,2.6vw,13px);
+  letter-spacing:.28em;line-height:1.15;color:rgba(255,255,255,.72);
+  opacity:0;transition:.4s;white-space:nowrap;
+}
+#actorWrap{
+  position:absolute;z-index:5;
+  left:-45%;
+  bottom:17%;
+  width:min(53vw,290px);
+  aspect-ratio:1/1;
+  transform-origin:50% 88%;
+  will-change:transform,left;
+}
+#actor{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:contain;object-position:center bottom;
+  filter:drop-shadow(0 14px 8px rgba(0,0,0,.55));
+  user-select:none;-webkit-user-drag:none;
+}
+#shadow{
+  position:absolute;z-index:4;
+  left:50%;bottom:16.65%;
+  width:min(22vw,120px);height:min(3vw,16px);
+  transform:translateX(-50%);
+  border-radius:999px;
+  background:radial-gradient(ellipse at center, rgba(0,0,0,.45) 0%, rgba(0,0,0,.26) 55%, rgba(0,0,0,0) 82%);
+  filter:blur(2px);
+  opacity:.9;
+  will-change:transform,opacity,width;
+}
+.floor{
+  position:absolute;left:8%;right:8%;bottom:16.9%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+  box-shadow:0 0 26px rgba(255,255,255,.16);
+}
+#caption{
+  position:absolute;left:7%;right:7%;bottom:max(7.4%,calc(env(safe-area-inset-bottom) + 18px));
+  text-align:center;z-index:10;
+  font-size:clamp(12px,3.6vw,18px);font-weight:900;letter-spacing:.14em;
+  text-shadow:0 3px 12px #000;
+}
+#fx{position:absolute;inset:0;z-index:7;pointer-events:none}
+.fx{
+  position:absolute;font-size:clamp(18px,4.8vw,26px);opacity:0;
+  animation:floatFx 1.55s ease-out forwards;
+}
+@keyframes floatFx{
+  0%{opacity:0;transform:translateY(18px) scale(.65)}
+  25%{opacity:.95}
+  100%{opacity:0;transform:translateY(-80px) scale(1.08) rotate(10deg)}
+}
+@keyframes enterBob{
+  0%,100%{transform:translateY(0) rotate(-1.5deg)}
+  50%{transform:translateY(-6px) rotate(1.5deg)}
+}
+@keyframes breathe{
+  0%,100%{transform:translateY(0) scale(1,1)}
+  40%{transform:translateY(-3px) scale(1.012,.992)}
+  70%{transform:translateY(0) scale(.997,1.007)}
+}
+@keyframes seriousPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.03)}
+}
+@keyframes charmMove{
+  0%,100%{transform:rotate(-1.6deg) translateY(0)}
+  50%{transform:rotate(1.6deg) translateY(-4px)}
+}
+@keyframes waveMove{
+  0%,100%{transform:rotate(-1deg) translateY(0)}
+  50%{transform:rotate(1.6deg) translateY(-3px)}
+}
+@keyframes heartMove{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.035) translateY(-3px)}
+}
+@keyframes danceMove{
+  0%,100%{transform:translateX(0) translateY(0) rotate(-2deg)}
+  25%{transform:translateX(-6px) translateY(-5px) rotate(-4deg)}
+  50%{transform:translateX(6px) translateY(0) rotate(3deg)}
+  75%{transform:translateX(-3px) translateY(-6px) rotate(-2deg)}
+}
+@keyframes finalHop{
+  0%,100%{transform:scale(1.1) translateY(0)}
+  48%{transform:scale(1.1) translateY(-18px)}
+  72%{transform:scale(1.12,.98) translateY(1px)}
+}
+@keyframes stageFade{to{opacity:0}}
+
+/* New cute-motion helpers */
+.prep{
+  animation:prepDip .22s ease-out forwards !important;
+}
+@keyframes prepDip{
+  0%{transform:translateY(0) scale(1,1)}
+  100%{transform:translateY(5px) scale(1.045,.955)}
+}
+.pop{
+  animation:popSettle .48s cubic-bezier(.2,.9,.2,1) forwards !important;
+}
+@keyframes popSettle{
+  0%{transform:translateY(5px) scale(1.04,.96)}
+  45%{transform:translateY(-8px) scale(.965,1.045)}
+  70%{transform:translateY(1px) scale(1.015,.99)}
+  100%{transform:translateY(0) scale(1,1)}
+}
+.bounce{
+  animation:bounceCute .72s cubic-bezier(.25,.85,.2,1) forwards !important;
+}
+@keyframes bounceCute{
+  0%{transform:translateY(0) scale(1.03,.97)}
+  22%{transform:translateY(-18px) scale(.96,1.07)}
+  50%{transform:translateY(-5px) scale(1.02,.985)}
+  76%{transform:translateY(2px) scale(1.06,.95)}
+  100%{transform:translateY(0) scale(1,1)}
+}
+.wiggle{
+  animation:wiggleCute .7s ease-in-out forwards !important;
+}
+@keyframes wiggleCute{
+  0%{transform:rotate(0)}
+  20%{transform:rotate(-3deg)}
+  45%{transform:rotate(3deg)}
+  70%{transform:rotate(-1.6deg)}
+  100%{transform:rotate(0)}
+}
+.shadow-breathe{ animation:shadowBreathe 1.25s ease-in-out infinite; }
+@keyframes shadowBreathe{
+  0%,100%{transform:translateX(-50%) scale(1); opacity:.9}
+  50%{transform:translateX(-50%) scale(.96,.92); opacity:.78}
+}
+.shadow-hop{ animation:shadowHop .72s ease-out forwards !important; }
+@keyframes shadowHop{
+  0%{transform:translateX(-50%) scale(1); opacity:.92}
+  22%{transform:translateX(-50%) scale(.72,.75); opacity:.5}
+  52%{transform:translateX(-50%) scale(.86,.82); opacity:.65}
+  76%{transform:translateX(-50%) scale(1.08,1.03); opacity:.98}
+  100%{transform:translateX(-50%) scale(1); opacity:.9}
+}
+.shadow-dance{ animation:shadowDance 2.7s ease-in-out infinite; }
+@keyframes shadowDance{
+  0%,100%{transform:translateX(-50%) scale(1); opacity:.88}
+  25%{transform:translateX(-50%) scale(.9,.86); opacity:.72}
+  50%{transform:translateX(-50%) scale(1.02,.98); opacity:.94}
+  75%{transform:translateX(-50%) scale(.92,.88); opacity:.76}
+}
+
+#replay{
+  position:absolute;top:max(3%,calc(env(safe-area-inset-top) + 8px));right:4%;z-index:12;
+  border:1px solid rgba(255,255,255,.26);background:rgba(0,0,0,.34);color:#fff;
+  padding:7px 10px;border-radius:999px;font-size:10px;letter-spacing:.08em;cursor:pointer;
+}
+@media (max-width:430px){
+  #header{gap:20px}
+  #sub{letter-spacing:.22em}
+  #actorWrap{width:min(58vw,250px)}
+}
+</style>
+</head>
+<body>
+<main id="stage">
+  <div id="header">
+    <div id="logo">ASA</div>
+    <div id="sub">30 SECOND MOTION</div>
+  </div>
+  <div id="actorWrap"><img id="actor" src="assets/idle.png" alt="ASA"></div>
+  <div id="shadow"></div>
+  <div id="fx"></div>
+  <div class="floor"></div>
+  <div id="caption">READY...</div>
+  <button id="replay" type="button">↻ REPLAY</button>
+</main>
+<script>
+const actor=document.querySelector("#actor");
+const wrap=document.querySelector("#actorWrap");
+const caption=document.querySelector("#caption");
+const logo=document.querySelector("#logo");
+const sub=document.querySelector("#sub");
+const fx=document.querySelector("#fx");
+const stage=document.querySelector("#stage");
+const shadow=document.querySelector("#shadow");
+
+const IMG={
+  idle:"assets/idle.png",
+  smile:"assets/smile.png",
+  wink:"assets/wink.png",
+  serious:"assets/serious.png",
+  charm:"assets/charm.png",
+  wave:"assets/wave.png",
+  heart:"assets/heart.png",
+  dance1:"assets/dance1.png",
+  dance2:"assets/dance2.png",
+  dance3:"assets/dance3.png",
+  kiss:"assets/kiss.png"
+};
+
+Object.values(IMG).forEach(src=>{ const i=new Image(); i.src=src; });
+
+let timers=[];
+let seqTimer=null;
+let restoreTimer=null;
+
+function later(ms, fn){ timers.push(setTimeout(fn, ms)); }
+function clearAll(){
+  timers.forEach(clearTimeout); timers=[];
+  if(seqTimer){ clearInterval(seqTimer); seqTimer=null; }
+  if(restoreTimer){ clearTimeout(restoreTimer); restoreTimer=null; }
+}
+function show(name){ actor.src = IMG[name]; }
+function say(t){ caption.textContent = t; }
+function motion(anim){ wrap.style.animation = anim || ""; }
+function shadowMotion(anim){ shadow.className = anim ? anim : ""; }
+function burst(symbol, count=4, side="right"){
+  for(let i=0;i<count;i++){
+    later(i*140, ()=>{
+      const e=document.createElement("span");
+      e.className="fx";
+      e.textContent=symbol;
+      const left = side==="left" || (side==="both" && i%2===0);
+      e.style.left = left ? (10+Math.random()*10)+"%" : (80+Math.random()*10)+"%";
+      e.style.top = (48+Math.random()*18)+"%";
+      fx.appendChild(e);
+      setTimeout(()=>e.remove(), 1600);
+    });
+  }
+}
+function cycle(names, interval){
+  let i=0;
+  show(names[0]);
+  if(seqTimer) clearInterval(seqTimer);
+  seqTimer = setInterval(()=>{
+    i=(i+1)%names.length;
+    show(names[i]);
+  }, interval);
+}
+function stopCycle(){
+  if(seqTimer){ clearInterval(seqTimer); seqTimer=null; }
+}
+function microBlink(delay=0){
+  later(delay, ()=>{
+    const prev = actor.src;
+    actor.src = IMG.wink;
+    later(170, ()=>{ actor.src = prev; });
+  });
+}
+function prepThen(changeFn, mainAnim, shadowAnim, delay=220){
+  wrap.classList.remove("prep","pop","bounce","wiggle");
+  wrap.classList.add("prep");
+  later(delay, ()=>{
+    wrap.classList.remove("prep");
+    changeFn();
+    wrap.classList.add("pop");
+    motion(mainAnim);
+    shadowMotion(shadowAnim);
+    restoreTimer = setTimeout(()=>wrap.classList.remove("pop"), 500);
+  });
+}
+function cuteHop(changeFn, mainAnim, shadowAnim){
+  wrap.classList.remove("prep","pop","bounce","wiggle");
+  changeFn();
+  wrap.classList.add("bounce");
+  motion(mainAnim);
+  shadowMotion("shadow-hop");
+  restoreTimer = setTimeout(()=>{
+    wrap.classList.remove("bounce");
+    motion(mainAnim);
+    shadowMotion(shadowAnim);
+  }, 760);
+}
+function wiggleAccent(){
+  wrap.classList.remove("wiggle");
+  void wrap.offsetWidth;
+  wrap.classList.add("wiggle");
+  restoreTimer = setTimeout(()=>wrap.classList.remove("wiggle"), 720);
+}
+function reset(){
+  clearAll();
+  fx.innerHTML="";
+  wrap.style.transition="none";
+  wrap.style.left="-45%";
+  wrap.style.transform="";
+  wrap.style.animation="";
+  wrap.className="";
+  shadow.className="shadow-breathe";
+  stage.style.animation="";
+  stage.style.opacity="1";
+  logo.style.opacity="0";
+  logo.style.transform="translateY(-10px)";
+  sub.style.opacity="0";
+  sub.textContent="30 SECOND MOTION";
+  show("idle");
+  say("READY...");
+}
+function run(){
+  reset();
+
+  // 0.0 - 1.8s entrance
+  say("ASA COMES IN");
+  motion("enterBob .45s ease-in-out infinite");
+  shadowMotion("shadow-breathe");
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    wrap.style.transition="left 1.75s linear";
+    wrap.style.left="29%";
+  }));
+
+  // 1.8 - 3.6 idle / breathing
+  later(1800, ()=>{
+    show("idle");
+    motion("breathe 1.45s ease-in-out infinite");
+    shadowMotion("shadow-breathe");
+    say("HELLO, ASA.");
+    logo.style.opacity="1";
+    logo.style.transform="translateY(0)";
+    sub.style.opacity="1";
+    microBlink(900);
+  });
+
+  // 3.6 smile with pop
+  later(3600, ()=>{
+    cuteHop(()=>show("smile"), "breathe 1.32s ease-in-out infinite", "shadow-breathe");
+    say("SMILE");
+    burst("✦",3,"right");
+    microBlink(1300);
+  });
+
+  // 5.8 wink with anticipation
+  later(5800, ()=>{
+    prepThen(()=>show("wink"), "breathe 1.25s ease-in-out infinite", "shadow-breathe");
+    say("WINK!");
+    burst("♡",3,"left");
+  });
+
+  // 8.0 serious
+  later(8000, ()=>{
+    prepThen(()=>show("serious"), "seriousPulse 1.28s ease-in-out infinite", "shadow-breathe");
+    say("SERIOUS MODE");
+  });
+
+  // 10.2 charm with wiggle
+  later(10200, ()=>{
+    prepThen(()=>show("charm"), "charmMove 1.12s ease-in-out infinite", "shadow-breathe");
+    say("COOL & CHARM");
+    burst("✧",3,"right");
+    later(800, wiggleAccent);
+  });
+
+  // 12.8 wave with prep + overshoot
+  later(12800, ()=>{
+    prepThen(()=>show("wave"), "waveMove 1.25s ease-in-out infinite", "shadow-breathe");
+    say("BYE BYE ♡");
+    burst("♡",2,"right");
+  });
+
+  // 15.6 heart with hop and settle
+  later(15600, ()=>{
+    cuteHop(()=>show("heart"), "heartMove 1.35s ease-in-out infinite", "shadow-breathe");
+    say("MAKE A HEART");
+    burst("♥",4,"both");
+  });
+
+  // 18.4 dance with slower rhythm + bouncy shadow
+  later(18400, ()=>{
+    prepThen(()=>cycle(["dance1","dance2","dance3"], 980), "danceMove 2.85s ease-in-out infinite", "shadow-dance");
+    say("DANCE MODE");
+    burst("♪",3,"left");
+    later(1800, ()=>burst("♪",2,"right"));
+    later(3600, ()=>burst("♪",2,"left"));
+  });
+
+  // 25.2 kiss with cute bounce
+  later(25200, ()=>{
+    stopCycle();
+    cuteHop(()=>show("kiss"), "breathe 1.08s ease-in-out infinite", "shadow-breathe");
+    say("KISS ♥");
+    burst("♥",4,"left");
+  });
+
+  // 28.2 finale
+  later(28200, ()=>{
+    show("heart");
+    motion("finalHop .72s ease-in-out");
+    shadowMotion("shadow-hop");
+    say("ASA");
+    sub.textContent="SEE YOU NEXT TIME";
+    burst("♥",4,"both");
+  });
+
+  later(30500, ()=>{
+    stage.style.animation="stageFade .45s linear forwards";
+  });
+}
+document.querySelector("#replay").addEventListener("click", run);
+run();
+</script>
+</body>
+</html>
